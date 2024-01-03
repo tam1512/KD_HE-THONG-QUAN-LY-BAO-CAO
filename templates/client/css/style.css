@@ -1,0 +1,15 @@
+.error {
+  font-size: 90%;
+  padding: 2px;
+  color: red;
+  font-style: italic;
+}
+
+.header-nav {
+  display: flex;
+  flex-grow: 1;
+}
+
+.profile {
+  margin-left: auto;
+}
