@@ -686,11 +686,11 @@ $msgType = getFlashData('msg_type');
                <th width="5%">STT</th>
                <th width="15%">Người tạo</th>
                <th width="15%">Cơ sở</th>
-               <th width="17%">Sản phẩm</th>
+               <th width="15%">Sản phẩm</th>
                <th width="10%">Số PO</th>
                <th width="10%">Kết luận</th>
                <th width="10%">Ngày tạo</th>
-               <th width="12%">Trạng thái</th>
+               <th width="20%">Trạng thái</th>
                <th width="5%">Xem</th>
                <th width="5%">Sửa</th>
                <th width="5%">Xóa</th>
@@ -743,7 +743,7 @@ $msgType = getFlashData('msg_type');
                         }
                      }
                   ?>
-                  <lable class="btn btn-<?php echo $colorStatus?>"><?php echo $valueStatus ?></lable>
+                  <button class="btn btn-<?php echo $colorStatus?>"><?php echo $valueStatus ?></button>
                </td>
                <td class="text-center"><a class="btn btn-success"
                      href="<?php echo getLinkAdmin('reports', 'seen', ['id' => $report['id']]) ?>"><i

@@ -16,29 +16,6 @@ $data = [
    
    deleteSessionOutReport();
 
-   $statusReportArr = [
-      1 => [
-         "value" => "Đang xử lý",
-         "color" => "secondary"
-      ],
-      2 => [
-         "value" => "Chấp nhận",
-         "color" => "success"
-      ],
-      3 => [
-         "value" => "Trả sửa",
-         "color" => "danger"
-      ],
-      4 => [
-         "value" => "Nhận tiền trừ",
-         "color" => "warning"
-      ]
-      ];
-   
-   $listUsersXX = getRaw("SELECT id, fullname, email FROM users WHERE group_id = 4");
-   $listUsersQD = getRaw("SELECT id, fullname, email FROM users WHERE group_id = 5");
-   $listUsersPD = getRaw("SELECT id, fullname, email FROM users WHERE group_id = 6");
-
  $listAllFactories = getRaw("SELECT id, name FROM factories");
  $listAllProducts = getRaw("SELECT id, name, cate_id FROM products");
  $listAllProductCates = getRaw("SELECT id, name FROM product_categories");
@@ -49,13 +26,12 @@ $data = [
 if(isGet()) {
    $reportId = trim(getBody('get')['id']);
    if(!empty($reportId)) {
-      $defaultReport = firstRaw("SELECT rp.factory_id, rp.product_id, rp.status, rs.userXX_id, rs.userQD_id, rs.userPD_id, f.name, p.name, po_code, conclusion, code_report, defect_finder, quantity_deliver, comment, suggest, rp.create_at FROM reports AS rp JOIN report_categories AS rp_c ON rp.cate_id = rp_c.id JOIN users AS u ON rp.user_id = u.id JOIN factories AS f ON rp.factory_id = f.id JOIN products AS p ON rp.product_id = p.id JOIN resultaql AS ra ON rp.id = ra.report_id JOIN report_sign As rs ON rs.report_id = rp.id WHERE rp.id = $reportId");;
+      $defaultReport = firstRaw("SELECT rp.factory_id, rp.product_id, f.name, p.name, po_code, conclusion, code_report, defect_finder, quantity_deliver, comment, suggest, rp.create_at FROM reports AS rp JOIN report_categories AS rp_c ON rp.cate_id = rp_c.id JOIN users AS u ON rp.user_id = u.id JOIN factories AS f ON rp.factory_id = f.id JOIN products AS p ON rp.product_id = p.id JOIN resultaql AS ra ON rp.id = ra.report_id WHERE rp.id = $reportId");;
       setFlashData('defaultReport', $defaultReport);
    } else {
       redirect("admin/?module=reports");
    }
 }
-
 
 
 if(!empty(getBody('post')['id'])) {
@@ -173,8 +149,8 @@ if(!empty(getSession("listAllReportDefects[$reportId]"))) {
 
       $dataUpdateReportSign = [
          "userXX_id" => $userXXId,
-         "userQD_id" => $userQDId,
-         "userPD_id" => $userPDId
+            "userQD_id" => $userQDId,
+            "userPD_id" => $userPDId,
       ];
       //Mảng sau khi hoàn thành việc thêm và xóa
       $listAllReportDefectFinal = [];
@@ -324,8 +300,7 @@ if(!empty(getSession("listAllReportDefects[$reportId]"))) {
       if($updateAQL) {
          //update thông tin report
          $updateStatus = update('reports', $dataUpdateReport, "id=$reportId");
-         $updateStatusReportSign = update('report_sign', $dataUpdateReportSign, "report_id=$reportId");
-         if($updateStatus && $updateStatusReportSign) {
+         if($updateStatus) {
                removeSession("listAllReportDefects[$reportId]");
                setFlashData('msg', 'Chỉnh sửa biên bản thành công.');
                setFlashData('msg_type', 'success');
@@ -333,7 +308,7 @@ if(!empty(getSession("listAllReportDefects[$reportId]"))) {
             setFlashData('msg', 'Lỗi hệ thống. Vui lòng thử lại sau.');
             setFlashData('msg_type', 'danger');
          }
-         // redirect('admin/?module=reports');
+         redirect('admin/?module=reports');
       }
    } else {
       if(!empty($errors['listAllReportDefects']['required'])) {
@@ -343,7 +318,7 @@ if(!empty(getSession("listAllReportDefects[$reportId]"))) {
       }
       setFlashData('errors', $errors);
       setFlashData('old', $body);
-      // redirect("admin/?module=reports&action=edit&id=$reportId");
+      redirect("admin/?module=reports&action=edit&id=$reportId");
    }
 
 }

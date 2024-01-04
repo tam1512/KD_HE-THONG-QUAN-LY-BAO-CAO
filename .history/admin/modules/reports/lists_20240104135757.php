@@ -743,7 +743,7 @@ $msgType = getFlashData('msg_type');
                         }
                      }
                   ?>
-                  <lable class="btn btn-<?php echo $colorStatus?>"><?php echo $valueStatus ?></lable>
+                  <button class="btn btn-<?php echo $colorStatus?>"><?php echo $valueStatus ?></button>
                </td>
                <td class="text-center"><a class="btn btn-success"
                      href="<?php echo getLinkAdmin('reports', 'seen', ['id' => $report['id']]) ?>"><i

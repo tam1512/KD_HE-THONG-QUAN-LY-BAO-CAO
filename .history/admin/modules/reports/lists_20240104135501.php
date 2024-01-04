@@ -8,24 +8,7 @@
    layout('breadcrumb', 'admin', $data);
 
    deleteSessionOutReport();
-   $statusReportArr = [
-      1 => [
-         "value" => "Đang xử lý",
-         "color" => "secondary"
-      ],
-      2 => [
-         "value" => "Chấp nhận",
-         "color" => "success"
-      ],
-      3 => [
-         "value" => "Trả sửa",
-         "color" => "danger"
-      ],
-      4 => [
-         "value" => "Nhận tiền trừ",
-         "color" => "warning"
-      ]
-      ];
+   
 
    $listAllUsers = getRaw("SELECT id, fullname, phone FROM users ORDER BY create_at DESC");
    $listAllCates = getRaw("SELECT id, name, code_category FROM report_categories ORDER BY create_at DESC");
@@ -136,7 +119,7 @@ $limitPagination = _LIMIT_PAGINATION;
  */
 $offset = ($page - 1) * $reportOnPage;
 
-$listReportOnPage = getRaw("SELECT rp.id, rp.cate_id, rp.user_id, rp.factory_id, rp.product_id, rp.status, rp_c.name AS name_cate, u.fullname AS name_user, f.name AS name_factory, p.name AS name_product, po_code, conclusion, code_report, rp.create_at FROM reports AS rp JOIN report_categories AS rp_c ON rp.cate_id = rp_c.id JOIN users AS u ON rp.user_id = u.id JOIN factories AS f ON rp.factory_id = f.id JOIN products AS p ON rp.product_id = p.id JOIN resultaql AS ra ON rp.id = ra.report_id $filter ORDER BY rp.create_at DESC LIMIT $offset, $reportOnPage");
+$listReportOnPage = getRaw("SELECT rp.id, rp.cate_id, rp.user_id, rp.factory_id, rp.product_id, rp_c.name AS name_cate, u.fullname AS name_user, f.name AS name_factory, p.name AS name_product, po_code, conclusion, code_report, rp.create_at FROM reports AS rp JOIN report_categories AS rp_c ON rp.cate_id = rp_c.id JOIN users AS u ON rp.user_id = u.id JOIN factories AS f ON rp.factory_id = f.id JOIN products AS p ON rp.product_id = p.id JOIN resultaql AS ra ON rp.id = ra.report_id $filter ORDER BY rp.create_at DESC LIMIT $offset, $reportOnPage");
 
 //Xử lý query String
 $queryStr = null;
@@ -686,11 +669,11 @@ $msgType = getFlashData('msg_type');
                <th width="5%">STT</th>
                <th width="15%">Người tạo</th>
                <th width="15%">Cơ sở</th>
-               <th width="17%">Sản phẩm</th>
+               <th width="15%">Sản phẩm</th>
                <th width="10%">Số PO</th>
                <th width="10%">Kết luận</th>
                <th width="10%">Ngày tạo</th>
-               <th width="12%">Trạng thái</th>
+               <th>Trạng thái</th>
                <th width="5%">Xem</th>
                <th width="5%">Sửa</th>
                <th width="5%">Xóa</th>
@@ -743,7 +726,7 @@ $msgType = getFlashData('msg_type');
                         }
                      }
                   ?>
-                  <lable class="btn btn-<?php echo $colorStatus?>"><?php echo $valueStatus ?></lable>
+                  <button class="btn btn-<?php echo $colorStatus?>"><?php echo $valueStatus ?></button>
                </td>
                <td class="text-center"><a class="btn btn-success"
                      href="<?php echo getLinkAdmin('reports', 'seen', ['id' => $report['id']]) ?>"><i

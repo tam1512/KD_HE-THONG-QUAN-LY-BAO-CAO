@@ -16,29 +16,6 @@ $data = [
    
    deleteSessionOutReport();
 
-   $statusReportArr = [
-      1 => [
-         "value" => "Đang xử lý",
-         "color" => "secondary"
-      ],
-      2 => [
-         "value" => "Chấp nhận",
-         "color" => "success"
-      ],
-      3 => [
-         "value" => "Trả sửa",
-         "color" => "danger"
-      ],
-      4 => [
-         "value" => "Nhận tiền trừ",
-         "color" => "warning"
-      ]
-      ];
-   
-   $listUsersXX = getRaw("SELECT id, fullname, email FROM users WHERE group_id = 4");
-   $listUsersQD = getRaw("SELECT id, fullname, email FROM users WHERE group_id = 5");
-   $listUsersPD = getRaw("SELECT id, fullname, email FROM users WHERE group_id = 6");
-
  $listAllFactories = getRaw("SELECT id, name FROM factories");
  $listAllProducts = getRaw("SELECT id, name, cate_id FROM products");
  $listAllProductCates = getRaw("SELECT id, name FROM product_categories");
@@ -55,7 +32,6 @@ if(isGet()) {
       redirect("admin/?module=reports");
    }
 }
-
 
 
 if(!empty(getBody('post')['id'])) {
