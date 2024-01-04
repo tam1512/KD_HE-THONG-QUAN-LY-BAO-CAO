@@ -14,41 +14,18 @@ $data = [
    
    deleteSessionOutReport();
 
-$statusReportArr = [
-   1 => [
-      "value" => "Đang xử lý",
-      "color" => "secondary"
-   ],
-   2 => [
-      "value" => "Chấp nhận",
-      "color" => "success"
-   ],
-   3 => [
-      "value" => "Trả sửa",
-      "color" => "danger"
-   ],
-   4 => [
-      "value" => "Nhận tiền trừ",
-      "color" => "warning"
-   ]
-   ];
-
-$listUsersXX = getRaw("SELECT id, fullname, email FROM users WHERE group_id = 4");
-$listUsersQD = getRaw("SELECT id, fullname, email FROM users WHERE group_id = 5");
-$listUsersPD = getRaw("SELECT id, fullname, email FROM users WHERE group_id = 6");
-
  $listAllFactories = getRaw("SELECT id, name FROM factories");
  $listAllProducts = getRaw("SELECT id, name, cate_id FROM products");
  $listAllProductCates = getRaw("SELECT id, name FROM product_categories");
  $listAllDefectCates = getRaw("SELECT id, name FROM defect_categories");
  $listAllDefects = getRaw("SELECT id, name FROM defects");
  $listAllReportDefects = [];
-
  if(!empty(getSession("listAllReportDefectsAdd"))) {
    $listAllReportDefects = getSession("listAllReportDefectsAdd");
 } else {
    setSession("listAllReportDefectsAdd", $listAllReportDefects);
 }
+
 
 $userId = isLogin()['user_id'];
 
@@ -69,12 +46,6 @@ $userId = isLogin()['user_id'];
    $quantityInspect = trim($body['quantity_inspect']);
    $comment = trim($body['comment']);
    $suggest = trim($body['suggest']);
-
-   $status = trim($body['status']);
-
-   $userXXId = trim($body['userXX_id']);
-   $userQDId = trim($body['userQD_id']);
-   $userPDId = trim($body['userPD_id']);
 
    if(empty($codeReport)) {
       $errors['code_report']['required'] = 'Mã báo cáo không được bỏ trống';
@@ -103,22 +74,6 @@ $userId = isLogin()['user_id'];
       }
    }
 
-   if(empty($status)) {
-      $errors['status']['required'] = 'Vui lòng chọn trạng thái';
-   }
-
-   if(empty($userXXId)) {
-      $errors['userXX_id']['required'] = 'Vui lòng chọn người xem xét';
-   }
-
-   if(empty($userQDId)) {
-      $errors['userQD_id']['required'] = 'Vui lòng chọn QĐ/PQĐ';
-   }
-
-   if(empty($userPDId)) {
-      $errors['userPD_id']['required'] = 'Vui lòng chọn người phê duyệt';
-   }
-
    if(empty($listAllReportDefects)) {
       $errors['listAllReportDefects']['required'] = 'Danh sách lỗi đang trống. Không thể thêm báo cáo!';
    }
@@ -140,21 +95,10 @@ $userId = isLogin()['user_id'];
          'suggest' => $suggest,
          'create_at' => date('Y-m-d H:i:s'),
       ];
-   
+      
       $statusInsertReport = insert('reports', $dataInsertReport);
       if($statusInsertReport) {
          $reportId = insertId();
-
-         //Thêm ràng buộc chữ ký cho report
-         $dataInsertReportSign = [
-            'report_id' => $reportId,
-            "userXX_id" => $userXXId,
-            "userQD_id" => $userQDId,
-            "userPD_id" => $userPDId,
-         ];
-
-         $statusinsertReportSign = insert('report_sign', $dataInsertReportSign);
-
          $addStatus = true;
          // Thêm report_defect
          if(!empty($listAllReportDefects)) {
@@ -201,7 +145,7 @@ $userId = isLogin()['user_id'];
          }
 
          // insertAQL
-         if($addStatus && $statusinsertReportSign) {
+         if($addStatus) {
             // lấy ra số lượng lỗi được cho phép
             $quantityDefectAccess = AQL($quantityDeliver);   
             $criticalDefects = $quantityDefectAccess['criticalDefects'];
@@ -209,7 +153,6 @@ $userId = isLogin()['user_id'];
             $minorDefects = $quantityDefectAccess['minorDefects'];
 
             //Lấy ra số lỗi thực tế
-            
             $quantityDefectReal = getSumDefectByType($listAllReportDefects);
             $sumCriticalDefects = $quantityDefectReal['sumCriticalDefects'];
             $sumMajorDefects = $quantityDefectReal['sumMajorDefects'];
@@ -240,7 +183,7 @@ $userId = isLogin()['user_id'];
                setFlashData('msg', 'Lỗi hệ thống. Vui lòng thử lại sau.(statusInsertReportDefect)');
                setFlashData('msg_type', 'danger');
             }
-            // redirect('admin/?module=reports');
+            redirect('admin/?module=reports');
          }
       }
    } else {
@@ -252,7 +195,7 @@ $userId = isLogin()['user_id'];
       setFlashData('msg_type', 'danger');
       setFlashData('errors', $errors);
       setFlashData('old', $body);
-      // redirect("admin/?module=reports&action=add");
+      redirect("admin/?module=reports&action=add");
    }
 
 }
@@ -261,12 +204,6 @@ $msg = getFlashData('msg');
 $msgType = getFlashData('msg_type');
 $errors = getFlashData('errors');
 $old = getFlashData('old');
-
-//Lấy ra số lỗi thực tế
-$quantityDefectReal = getSumDefectByType($listAllReportDefects);
-$sumCriticalDefects = $quantityDefectReal['sumCriticalDefects'];
-$sumMajorDefects = $quantityDefectReal['sumMajorDefects'];
-$sumMinorDefects = $quantityDefectReal['sumMinorDefects'];
 
  ?>
 
@@ -370,90 +307,6 @@ $sumMinorDefects = $quantityDefectReal['sumMinorDefects'];
                      <?php echo form_error('suggest', $errors, '<span class="error">', '</span>') ?>
                   </div>
                </div>
-               <div class="col-6">
-                  <label for="status">Trạng thái</label>
-                  <div class="form-group">
-                     <select name="status" id="status" class="form-control mw-210">
-                        <option value="0">Chọn trạng thái</option>
-                        <?php 
-                        if(!empty($statusReportArr)):
-                           foreach($statusReportArr as $key=>$status):
-                     ?>
-                        <option value="<?php echo $key ?>"
-                           <?php echo (!empty($old['status']) && $key == $old['status']) ? 'selected' : false ?>>
-                           <?php echo $status['value']?>
-                        </option>
-                        <?php 
-                           endforeach;
-                        endif;
-                     ?>
-                     </select>
-                     <?php echo form_error('status', $errors, '<span class="error">', '</span>') ?>
-                  </div>
-               </div>
-               <div class="col-6">
-                  <label for="userXX_id">Người xem xét</label>
-                  <div class="form-group">
-                     <select name="userXX_id" id="userXX_id" class="form-control mw-210">
-                        <option value="0">Chọn người xem xét</option>
-                        <?php 
-                        if(!empty($listUsersXX)):
-                           foreach($listUsersXX as $user):
-                     ?>
-                        <option value="<?php echo $user['id'] ?>"
-                           <?php echo (!empty($old['userXX_id']) && $user['id'] == $old['userXX_id']) ? 'selected' : false ?>>
-                           <?php echo $user['fullname']?>
-                        </option>
-                        <?php 
-                           endforeach;
-                        endif;
-                     ?>
-                     </select>
-                     <?php echo form_error('userXX_id', $errors, '<span class="error">', '</span>') ?>
-                  </div>
-               </div>
-               <div class="col-6">
-                  <label for="userQD_id">QĐ/PQĐ</label>
-                  <div class="form-group">
-                     <select name="userQD_id" id="userQD_id" class="form-control mw-210">
-                        <option value="0">Chọn QĐ/PQĐ</option>
-                        <?php 
-                        if(!empty($listUsersQD)):
-                           foreach($listUsersQD as $user):
-                     ?>
-                        <option value="<?php echo $user['id'] ?>"
-                           <?php echo (!empty($old['userQD_id']) && $user['id'] == $old['userQD_id']) ? 'selected' : false ?>>
-                           <?php echo $user['fullname']?>
-                        </option>
-                        <?php 
-                           endforeach;
-                        endif;
-                     ?>
-                     </select>
-                     <?php echo form_error('userQD_id', $errors, '<span class="error">', '</span>') ?>
-                  </div>
-               </div>
-               <div class="col-6">
-                  <label for="userPD_id">Người phê duyệt</label>
-                  <div class="form-group">
-                     <select name="userPD_id" id="userPD_id" class="form-control mw-210">
-                        <option value="0">Chọn người phê duyệt</option>
-                        <?php 
-                        if(!empty($listUsersPD)):
-                           foreach($listUsersPD as $user):
-                     ?>
-                        <option value="<?php echo $user['id'] ?>"
-                           <?php echo (!empty($old['userPD_id']) && $user['id'] == $old['userPD_id']) ? 'selected' : false ?>>
-                           <?php echo $user['fullname']?>
-                        </option>
-                        <?php 
-                           endforeach;
-                        endif;
-                     ?>
-                     </select>
-                     <?php echo form_error('userPD_id', $errors, '<span class="error">', '</span>') ?>
-                  </div>
-               </div>
             </div>
             <div class="col-12">
                <hr>
@@ -478,7 +331,7 @@ $sumMinorDefects = $quantityDefectReal['sumMinorDefects'];
                      <td class="text-center" id="majorDefects"><?php echo empty($majorDefects) ? 0 : $majorDefects ?>
                      </td>
                      <td class="text-center" id="sumMajorDefects">
-                        <?php echo empty($sumMajorDefects) ? 0 : $sumMajorDefects ?>
+                        <?php echo empty($sumMajorDefects) ? 0 : $criticalDefects ?>
                      </td>
                   </tr>
                   <tr>

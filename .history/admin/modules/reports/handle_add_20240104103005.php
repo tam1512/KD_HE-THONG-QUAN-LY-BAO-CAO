@@ -5,7 +5,7 @@
       $defectId = $body['defect_id'];
       $note = $body['note'];
       $defectQuatity = $body['defect_quantity'];
-      $reportId = !empty($body['report_id']) ? $body['report_id'] : 'null';
+      $reportId = !empty($body['report_id']) ? $body['report_id'] : null;;
 
       $defect = firstRaw("SELECT level, name, skip FROM defects WHERE id = $defectId");
       $cate = firstRaw("SELECT name FROM defect_categories WHERE id = $cateId");
@@ -42,13 +42,12 @@
          $defectItem['files'] = $fileArrs;
       }
 
-      if($reportId == "null") {
-         $listAllReportDefects = getSession("listAllReportDefectsAdd");
-      } else {
+      if($reportId != 'null') {
          $listAllReportDefects = getSession("listAllReportDefects[$reportId]");
+      } else {
+         $listAllReportDefects = getSession("listAllReportDefectsAdd");
       }
       $listAllReportDefects[] = $defectItem;
-
       if($reportId == 'null') {
          setSession("listAllReportDefectsAdd", $listAllReportDefects);
       } else {

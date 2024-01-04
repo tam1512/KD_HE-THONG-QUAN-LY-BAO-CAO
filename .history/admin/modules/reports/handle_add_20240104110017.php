@@ -54,6 +54,9 @@
       } else {
          setSession("listAllReportDefects[$reportId]", $listAllReportDefects);
       }
-      echo json_encode($listAllReportDefects);
+
+      echo json_encode(getSession("listAllReportDefectsAdd"));
+      // echo json_encode($listAllReportDefects);
+
    }
 ?>

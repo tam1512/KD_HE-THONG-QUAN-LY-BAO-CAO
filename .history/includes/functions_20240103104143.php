@@ -712,6 +712,7 @@ function deleteSessionOutReport() {
       $id = $itemArr[1];
     }
   }
+
   // # module reports xóa tất cả session
   if(!empty($module)) {
     if($module != 'reports') {
@@ -751,7 +752,7 @@ function deleteAllSession($keySession, $id = null) {
     if(!empty($_SESSION)) {
       if(!empty($id)) {
         foreach($_SESSION as $key => $value) {
-          if(strpos($key, $keySession) !== false && $key != "listAllReportDefectsAdd") {
+          if(strpos($key, $keySession) !== false) {
             if($keySession."[$id]" != $key) {
               removeSession($key);
             }
@@ -759,7 +760,7 @@ function deleteAllSession($keySession, $id = null) {
         }
       } else {
         foreach($_SESSION as $key => $value) {
-          if(strpos($key, $keySession) !== false && $key != "listAllReportDefectsAdd") {
+          if(strpos($key, $keySession) !== false) {
             removeSession($key);
           }
         }

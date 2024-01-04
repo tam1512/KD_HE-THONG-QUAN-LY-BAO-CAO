@@ -268,6 +268,7 @@ function handelFormSubmit(mathDefectError) {
   formData.append("report_id", reportId);
 
   if (!isErrorCate && !isErrorDefect && !isErrorQuantity) {
+    console.log(1);
     url = `${rootUrlAdmin}?module=reports&action=handle_add`;
     $.ajax({
       url: url,

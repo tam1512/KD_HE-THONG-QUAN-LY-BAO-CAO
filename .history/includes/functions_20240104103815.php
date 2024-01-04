@@ -712,22 +712,26 @@ function deleteSessionOutReport() {
       $id = $itemArr[1];
     }
   }
+
   // # module reports xóa tất cả session
   if(!empty($module)) {
     if($module != 'reports') {
       removeSession('listAllReportDefectsAdd');
       // xóa ds các listAllReportDefects
       deleteAllSession('listAllReportDefects');
+      echo "module = reports";
     } else {
       if(!empty($action)) {
         // action # add và edit xóa hết
         if($action != 'add' && $action != 'edit') {
+          echo "action # add và edit";
           removeSession('listAllReportDefectsAdd');
           // xóa ds các listAllReportDefects
           deleteAllSession('listAllReportDefects');
         }
         // # action add xóa list add
         if($action != 'add') {
+          echo "action #add";
           removeSession('listAllReportDefectsAdd');
         }
         if($action != 'edit') {
@@ -738,6 +742,7 @@ function deleteSessionOutReport() {
           deleteAllSession('listAllReportDefects', $id);
         }
       } else {
+        echo "action không có";
         removeSession('listAllReportDefectsAdd');
         // xóa ds các listAllReportDefects
         deleteAllSession('listAllReportDefects');
@@ -751,7 +756,7 @@ function deleteAllSession($keySession, $id = null) {
     if(!empty($_SESSION)) {
       if(!empty($id)) {
         foreach($_SESSION as $key => $value) {
-          if(strpos($key, $keySession) !== false && $key != "listAllReportDefectsAdd") {
+          if(strpos($key, $keySession) !== false) {
             if($keySession."[$id]" != $key) {
               removeSession($key);
             }
@@ -759,7 +764,7 @@ function deleteAllSession($keySession, $id = null) {
         }
       } else {
         foreach($_SESSION as $key => $value) {
-          if(strpos($key, $keySession) !== false && $key != "listAllReportDefectsAdd") {
+          if(strpos($key, $keySession) !== false) {
             removeSession($key);
           }
         }

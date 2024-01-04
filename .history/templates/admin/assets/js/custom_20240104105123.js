@@ -276,6 +276,7 @@ function handelFormSubmit(mathDefectError) {
       contentType: false,
       processData: false,
       success: function (data) {
+        console.log("data:", data);
         let sumCriticalDefects = 0;
         let sumMajorDefects = 0;
         let sumMinorDefects = 0;

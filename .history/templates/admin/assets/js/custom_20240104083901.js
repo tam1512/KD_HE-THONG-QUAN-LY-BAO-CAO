@@ -194,6 +194,7 @@ let reportId = null;
 if (reportIdElement != null) {
   reportId = reportIdElement.value;
 }
+
 if (btnAddDefect != null) {
   btnAddDefect.addEventListener("click", (e) => {
     e.preventDefault();

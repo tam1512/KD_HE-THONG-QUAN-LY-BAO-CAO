@@ -49,11 +49,13 @@
       }
       $listAllReportDefects[] = $defectItem;
 
+      // echo json_encode($listAllReportDefects);
+
       if($reportId == 'null') {
          setSession("listAllReportDefectsAdd", $listAllReportDefects);
       } else {
          setSession("listAllReportDefects[$reportId]", $listAllReportDefects);
       }
-      echo json_encode($listAllReportDefects);
+
    }
 ?>

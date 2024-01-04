@@ -202,6 +202,7 @@ if (btnAddDefect != null) {
       method: "POST",
       data: { report_id: reportId },
       success: (data) => {
+        console.log("data", data);
         data = JSON.parse(data);
         let mathDefectError = false;
         for (let i = 0; i < data.length; i++) {

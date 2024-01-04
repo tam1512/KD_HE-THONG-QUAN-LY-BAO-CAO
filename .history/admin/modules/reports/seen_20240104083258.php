@@ -23,8 +23,7 @@ if(isGet()) {
 <div class="container  pb-16">
    <a class="btn btn-success" href="<?php echo getLinkAdmin('reports') ?>">Quay lại</a>
    <a class="btn btn-primary" href="<?php echo getLinkAdmin('reports', 'edit', ['id'=>$reportId]) ?>">Chỉnh sửa</a>
-   <a class="btn btn-warning export" href="<?php echo getLinkAdmin('reports', 'export', ['id'=>$reportId]) ?>">Xuất
-      PDF</a>
+   <a class="btn btn-warning" href="<?php echo getLinkAdmin('reports', 'export', ['id'=>$reportId]) ?>">Xuất PDF</a>
 </div>
 <?php
    layout('footer','admin');

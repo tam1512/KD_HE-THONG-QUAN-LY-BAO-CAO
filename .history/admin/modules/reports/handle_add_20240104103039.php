@@ -42,13 +42,12 @@
          $defectItem['files'] = $fileArrs;
       }
 
-      if($reportId == "null") {
-         $listAllReportDefects = getSession("listAllReportDefectsAdd");
-      } else {
+      if($reportId != 'null') {
          $listAllReportDefects = getSession("listAllReportDefects[$reportId]");
+      } else {
+         $listAllReportDefects = getSession("listAllReportDefectsAdd");
       }
       $listAllReportDefects[] = $defectItem;
-
       if($reportId == 'null') {
          setSession("listAllReportDefectsAdd", $listAllReportDefects);
       } else {

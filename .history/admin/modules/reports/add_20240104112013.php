@@ -210,6 +210,9 @@ $userId = isLogin()['user_id'];
 
             //Lấy ra số lỗi thực tế
             
+echo '<pre>';
+print_r($listAllReportDefects);
+echo '</pre>';
             $quantityDefectReal = getSumDefectByType($listAllReportDefects);
             $sumCriticalDefects = $quantityDefectReal['sumCriticalDefects'];
             $sumMajorDefects = $quantityDefectReal['sumMajorDefects'];
@@ -261,12 +264,6 @@ $msg = getFlashData('msg');
 $msgType = getFlashData('msg_type');
 $errors = getFlashData('errors');
 $old = getFlashData('old');
-
-//Lấy ra số lỗi thực tế
-$quantityDefectReal = getSumDefectByType($listAllReportDefects);
-$sumCriticalDefects = $quantityDefectReal['sumCriticalDefects'];
-$sumMajorDefects = $quantityDefectReal['sumMajorDefects'];
-$sumMinorDefects = $quantityDefectReal['sumMinorDefects'];
 
  ?>
 
@@ -478,7 +475,7 @@ $sumMinorDefects = $quantityDefectReal['sumMinorDefects'];
                      <td class="text-center" id="majorDefects"><?php echo empty($majorDefects) ? 0 : $majorDefects ?>
                      </td>
                      <td class="text-center" id="sumMajorDefects">
-                        <?php echo empty($sumMajorDefects) ? 0 : $sumMajorDefects ?>
+                        <?php echo empty($sumMajorDefects) ? 0 : $criticalDefects ?>
                      </td>
                   </tr>
                   <tr>

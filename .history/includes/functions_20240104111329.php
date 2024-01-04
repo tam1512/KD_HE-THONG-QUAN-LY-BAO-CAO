@@ -712,9 +712,11 @@ function deleteSessionOutReport() {
       $id = $itemArr[1];
     }
   }
+  echo $url;
   // # module reports xóa tất cả session
   if(!empty($module)) {
     if($module != 'reports') {
+      echo "module # reports";
       removeSession('listAllReportDefectsAdd');
       // xóa ds các listAllReportDefects
       deleteAllSession('listAllReportDefects');
@@ -722,22 +724,27 @@ function deleteSessionOutReport() {
       if(!empty($action)) {
         // action # add và edit xóa hết
         if($action != 'add' && $action != 'edit') {
+          echo "action # add và edit";
           removeSession('listAllReportDefectsAdd');
           // xóa ds các listAllReportDefects
           deleteAllSession('listAllReportDefects');
         }
         // # action add xóa list add
         if($action != 'add') {
+          echo "action #add";
           removeSession('listAllReportDefectsAdd');
         }
         if($action != 'edit') {
+          echo "action # edit";
           // Xóa toàn bộ list edit
           deleteAllSession('listAllReportDefects');
         } else {
+          echo "action = edit";
           // giử lại list edit trùng id, xóa tất cả list edit khác id
           deleteAllSession('listAllReportDefects', $id);
         }
       } else {
+        echo "action không có";
         removeSession('listAllReportDefectsAdd');
         // xóa ds các listAllReportDefects
         deleteAllSession('listAllReportDefects');
@@ -751,7 +758,7 @@ function deleteAllSession($keySession, $id = null) {
     if(!empty($_SESSION)) {
       if(!empty($id)) {
         foreach($_SESSION as $key => $value) {
-          if(strpos($key, $keySession) !== false && $key != "listAllReportDefectsAdd") {
+          if(strpos($key, $keySession) !== false && $keySession = "listAllReportDefectsAdd") {
             if($keySession."[$id]" != $key) {
               removeSession($key);
             }
@@ -759,7 +766,7 @@ function deleteAllSession($keySession, $id = null) {
         }
       } else {
         foreach($_SESSION as $key => $value) {
-          if(strpos($key, $keySession) !== false && $key != "listAllReportDefectsAdd") {
+          if(strpos($key, $keySession) !== false && $keySession = "listAllReportDefectsAdd") {
             removeSession($key);
           }
         }

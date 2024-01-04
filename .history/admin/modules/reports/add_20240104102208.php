@@ -43,12 +43,12 @@ $listUsersPD = getRaw("SELECT id, fullname, email FROM users WHERE group_id = 6"
  $listAllDefectCates = getRaw("SELECT id, name FROM defect_categories");
  $listAllDefects = getRaw("SELECT id, name FROM defects");
  $listAllReportDefects = [];
-
  if(!empty(getSession("listAllReportDefectsAdd"))) {
    $listAllReportDefects = getSession("listAllReportDefectsAdd");
 } else {
    setSession("listAllReportDefectsAdd", $listAllReportDefects);
 }
+
 
 $userId = isLogin()['user_id'];
 
@@ -209,7 +209,6 @@ $userId = isLogin()['user_id'];
             $minorDefects = $quantityDefectAccess['minorDefects'];
 
             //Lấy ra số lỗi thực tế
-            
             $quantityDefectReal = getSumDefectByType($listAllReportDefects);
             $sumCriticalDefects = $quantityDefectReal['sumCriticalDefects'];
             $sumMajorDefects = $quantityDefectReal['sumMajorDefects'];
@@ -240,7 +239,7 @@ $userId = isLogin()['user_id'];
                setFlashData('msg', 'Lỗi hệ thống. Vui lòng thử lại sau.(statusInsertReportDefect)');
                setFlashData('msg_type', 'danger');
             }
-            // redirect('admin/?module=reports');
+            redirect('admin/?module=reports');
          }
       }
    } else {
@@ -252,7 +251,7 @@ $userId = isLogin()['user_id'];
       setFlashData('msg_type', 'danger');
       setFlashData('errors', $errors);
       setFlashData('old', $body);
-      // redirect("admin/?module=reports&action=add");
+      redirect("admin/?module=reports&action=add");
    }
 
 }
@@ -261,12 +260,6 @@ $msg = getFlashData('msg');
 $msgType = getFlashData('msg_type');
 $errors = getFlashData('errors');
 $old = getFlashData('old');
-
-//Lấy ra số lỗi thực tế
-$quantityDefectReal = getSumDefectByType($listAllReportDefects);
-$sumCriticalDefects = $quantityDefectReal['sumCriticalDefects'];
-$sumMajorDefects = $quantityDefectReal['sumMajorDefects'];
-$sumMinorDefects = $quantityDefectReal['sumMinorDefects'];
 
  ?>
 
@@ -478,7 +471,7 @@ $sumMinorDefects = $quantityDefectReal['sumMinorDefects'];
                      <td class="text-center" id="majorDefects"><?php echo empty($majorDefects) ? 0 : $majorDefects ?>
                      </td>
                      <td class="text-center" id="sumMajorDefects">
-                        <?php echo empty($sumMajorDefects) ? 0 : $sumMajorDefects ?>
+                        <?php echo empty($sumMajorDefects) ? 0 : $criticalDefects ?>
                      </td>
                   </tr>
                   <tr>

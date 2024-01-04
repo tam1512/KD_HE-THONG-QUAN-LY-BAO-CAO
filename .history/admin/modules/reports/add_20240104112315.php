@@ -478,7 +478,7 @@ $sumMinorDefects = $quantityDefectReal['sumMinorDefects'];
                      <td class="text-center" id="majorDefects"><?php echo empty($majorDefects) ? 0 : $majorDefects ?>
                      </td>
                      <td class="text-center" id="sumMajorDefects">
-                        <?php echo empty($sumMajorDefects) ? 0 : $sumMajorDefects ?>
+                        <?php echo empty($sumMajorDefects) ? 0 : $criticalDefects ?>
                      </td>
                   </tr>
                   <tr>

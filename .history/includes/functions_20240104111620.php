@@ -712,6 +712,7 @@ function deleteSessionOutReport() {
       $id = $itemArr[1];
     }
   }
+  echo $url;
   // # module reports xóa tất cả session
   if(!empty($module)) {
     if($module != 'reports') {

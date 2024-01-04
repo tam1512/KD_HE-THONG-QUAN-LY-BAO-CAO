@@ -146,20 +146,16 @@ $rowMaxOnPage = 10;
                      if($item["skip"] == 0):
          ?>
          <tr>
-            <?php echo ($isFirst) ? '<td class="text-center" style="vertical-align: middle;" rowspan="'.$countRows.'">'.$count.'</td>' : '' ?>
+            <?php echo ($isFirst) ? '<td class="text-center" rowspan="'.$countRows.'">'.$count.'</td>' : '' ?>
             <?php echo ($isFirst) ? '<td rowspan="'.$countRows.'" style="text-align: center; vertical-align: middle;" width="10%">'.$key.'</td>' : '';  $isFirst = false?>
-            <td width="26%" style="vertical-align: middle;"><?php echo $item['name'] ?></td>
-            <td class="text-center" style="vertical-align: middle;">
+            <td width="26%"><?php echo $item['name'] ?></td>
+            <td class="text-center">
                <?php $level = getLevelReportDefect($item['defect_quantity'], $item['defect_id']); echo getLevelString($item['level']) ?>
             </td>
-            <td class="text-center" style="vertical-align: middle;">
-               <?php echo ($level == 'Nghiêm trọng') ? $item['defect_quantity'] : false ?></td>
-            <td class="text-center" style="vertical-align: middle;">
-               <?php echo ($level == 'Nặng') ? $item['defect_quantity'] : false ?></td>
-            <td class="text-center" style="vertical-align: middle;">
-               <?php echo ($level == 'Nhẹ') ? $item['defect_quantity'] : false ?></td>
-            <td style="vertical-align: middle;" <?php echo (!empty($actionOld)) ? 'colspan="2"' : false; ?>>
-               <?php echo $item['note'] ?></td>
+            <td class="text-center"><?php echo ($level == 'Nghiêm trọng') ? $item['defect_quantity'] : false ?></td>
+            <td class="text-center"><?php echo ($level == 'Nặng') ? $item['defect_quantity'] : false ?></td>
+            <td class="text-center"><?php echo ($level == 'Nhẹ') ? $item['defect_quantity'] : false ?></td>
+            <td <?php echo (!empty($actionOld)) ? 'colspan="2"' : false; ?>><?php echo $item['note'] ?></td>
             <?php
                if(empty($actionOld)) {
                   echo '<td><a href="'.getLinkAdmin('reports', 'seen_images_defect', ['report_id'=>$reportId, 'report_defect_id'=>$item['id']]).'" class="btn btn-success"><i class="far fa-eye"></i></a></td>';
