@@ -12,7 +12,7 @@ $data = [
  layout('breadcrumb', 'admin', $data);
 
 $userId = isLogin()["user_id"];
-$userDetail = firstRaw("SELECT fullname, email, phone, address, name_avatar, avatar  FROM users WHERE id = $userId");
+$userDetail = firstRaw("SELECT fullname, email, phone, address  FROM users WHERE id = $userId");
 
 if(isPost()) {
    $errors = [];
@@ -21,21 +21,8 @@ if(isPost()) {
    $email = trim($body['email']);
    $phone = trim($body['phone']);
    $address = trim($body['address']);
-   $avatar = !empty($userDetail['avatar']) ? $userDetail['avatar'] : false;
-   $avatarName = !empty($userDetail['name_avatar']) ? $userDetail['name_avatar'] : false;
-   $config = [
-      'upload_dir' => "\modules\\users\uploads",
-      'max_size' => 5242880,
-      'allowed' => 'html, htm, txt, jpg, jpeg, png, gif, pdf, mp3, wav, sql',
-      'change_file_name' => uniqid()
-   ];
-   $data = uploadFile($config,'avatar', $_FILES['avatar']);
-
-   if($data['status'] == 'success') {
-      $avatar = $data['link'];
-      $avatarName = $data['fileOr'];
-   }
-   
+   $avatar = trim($body['avatar']);
+  
    if(empty($fullname)) {
       $errors['fullname']['required'] = 'Họ tên không được để trống';
    }
@@ -54,8 +41,6 @@ if(isPost()) {
          'email' => $email,
          'phone' => $phone,
          'address' => $address,
-         'avatar' => $avatar,
-         'name_avatar' => $avatarName,
          'update_at' => date('Y-m-d H:i:s')
       ];
 
@@ -89,7 +74,7 @@ if(!empty($old)) {
 <hr>
 <div class="container">
    <?php getMsg($message, $msgType) ?>
-   <form action="" method="POST" enctype="multipart/form-data">
+   <form action="" method="POST">
       <div class="row">
          <div class="col-6">
             <div class="form-group">
@@ -124,10 +109,8 @@ if(!empty($old)) {
          <div class="col-12">
             <div class="form-group">
                <label for="avatar">Ảnh đại diện</label>
-               <div class="form-control">
-                  <input type="file" id="avatar" name="avatar">
-                  <!-- <label for=""><?php echo form_infor('name_avatar', $infor) ?></label> -->
-               </div>
+               <input type="file" id="avatar" name="avatar" class="form-control" placeholder="Ảnh đại diện..."
+                  value="<?php echo form_infor('avatar', $infor) ?>">
             </div>
          </div>
       </div>

@@ -17,9 +17,8 @@ $userDetail = firstRaw("SELECT fullname, avatar FROM users WHERE id = $userId");
       <!-- Sidebar user panel (optional) -->
       <div class="user-panel mt-3 pb-3 mb-3 d-flex">
          <div class="image">
-            <img
-               src="<?php echo empty($userDetail['avatar']) ? _WEB_HOST_TEMPLATE_ADMIN.'/assets/img/no-avatar.png' : $userDetail['avatar'] ?>"
-               class="img-circle elevation-2" alt="<?php echo $userDetail['fullname'] ?>">
+            <img src="<?php echo _WEB_HOST_TEMPLATE_ADMIN.'/assets/' ?>img/user2-160x160.jpg"
+               class="img-circle elevation-2" alt="User Image">
          </div>
          <div class="info">
             <a href="<?php echo getLinkAdmin('users', 'profile') ?>"

@@ -12,7 +12,7 @@ $data = [
  layout('breadcrumb', 'admin', $data);
 
 $userId = isLogin()["user_id"];
-$userDetail = firstRaw("SELECT fullname, email, phone, address, name_avatar, avatar  FROM users WHERE id = $userId");
+$userDetail = firstRaw("SELECT fullname, email, phone, address, name_avatar  FROM users WHERE id = $userId");
 
 if(isPost()) {
    $errors = [];
@@ -21,8 +21,8 @@ if(isPost()) {
    $email = trim($body['email']);
    $phone = trim($body['phone']);
    $address = trim($body['address']);
-   $avatar = !empty($userDetail['avatar']) ? $userDetail['avatar'] : false;
-   $avatarName = !empty($userDetail['name_avatar']) ? $userDetail['name_avatar'] : false;
+   $avatar = null;
+   $avatarPath = null;
    $config = [
       'upload_dir' => "\modules\\users\uploads",
       'max_size' => 5242880,
@@ -33,9 +33,9 @@ if(isPost()) {
 
    if($data['status'] == 'success') {
       $avatar = $data['link'];
-      $avatarName = $data['fileOr'];
+      $avatarPath = $data['path'];
    }
-   
+
    if(empty($fullname)) {
       $errors['fullname']['required'] = 'Họ tên không được để trống';
    }
@@ -55,7 +55,7 @@ if(isPost()) {
          'phone' => $phone,
          'address' => $address,
          'avatar' => $avatar,
-         'name_avatar' => $avatarName,
+         'path_avatar' => $avatarPath,
          'update_at' => date('Y-m-d H:i:s')
       ];
 
@@ -124,12 +124,10 @@ if(!empty($old)) {
          <div class="col-12">
             <div class="form-group">
                <label for="avatar">Ảnh đại diện</label>
-               <div class="form-control">
-                  <input type="file" id="avatar" name="avatar">
-                  <!-- <label for=""><?php echo form_infor('name_avatar', $infor) ?></label> -->
-               </div>
+               <input type="file" id="avatar" name="avatar" class="form-control">
             </div>
          </div>
+         <input type="hidden" name="path" id="path" value="<?php echo form_infor('path_avatar', $infor) ?>">
       </div>
       <button type="submit" class="btn btn-primary btn-sm">Chỉnh sửa</a>
    </form>

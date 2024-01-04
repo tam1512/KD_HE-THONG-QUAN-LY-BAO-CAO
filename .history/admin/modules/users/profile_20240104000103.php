@@ -12,7 +12,7 @@ $data = [
  layout('breadcrumb', 'admin', $data);
 
 $userId = isLogin()["user_id"];
-$userDetail = firstRaw("SELECT fullname, email, phone, address, name_avatar, avatar  FROM users WHERE id = $userId");
+$userDetail = firstRaw("SELECT fullname, email, phone, address, name_avatar  FROM users WHERE id = $userId");
 
 if(isPost()) {
    $errors = [];
@@ -21,8 +21,8 @@ if(isPost()) {
    $email = trim($body['email']);
    $phone = trim($body['phone']);
    $address = trim($body['address']);
-   $avatar = !empty($userDetail['avatar']) ? $userDetail['avatar'] : false;
-   $avatarName = !empty($userDetail['name_avatar']) ? $userDetail['name_avatar'] : false;
+   $avatar = null;
+   $avatarName = null;
    $config = [
       'upload_dir' => "\modules\\users\uploads",
       'max_size' => 5242880,
@@ -126,7 +126,7 @@ if(!empty($old)) {
                <label for="avatar">Ảnh đại diện</label>
                <div class="form-control">
                   <input type="file" id="avatar" name="avatar">
-                  <!-- <label for=""><?php echo form_infor('name_avatar', $infor) ?></label> -->
+                  <label for=""><?php echo form_infor('name_avatar', $infor) ?></label>
                </div>
             </div>
          </div>
