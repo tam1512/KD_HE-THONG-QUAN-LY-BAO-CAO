@@ -69,9 +69,3 @@ input[type="checkbox"] + label {
   line-height: 1.2;
   cursor: pointer;
 }
-
-.sign {
-  width: 180px;
-  height: 90px;
-  border: none;
-}

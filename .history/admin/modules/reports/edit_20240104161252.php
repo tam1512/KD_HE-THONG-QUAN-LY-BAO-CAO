@@ -1,10 +1,12 @@
 <?php
+// Đang lỗi ở phần hiển thị danh sách các lỗi, danh mục lỗi khi đã chọn 
+// fix: danh sách tên lỗi riêng, danh sach danh mục lỗi riêng (tên lỗi phụ thuộc và danh mục lỗi)
 if(!defined('_INCODE')) die('Access denied...');
 /**
- * Chứa chức năng tạo mới report
+ * Chứa chức năng chỉnh sửa người dùng
  */
 $data = [
-   'title' => 'Thêm biên bản'
+   'title' => 'Chỉnh sửa biên bản'
 ];
 
    layout('header', 'admin', $data);
@@ -14,43 +16,71 @@ $data = [
    
    deleteSessionOutReport();
 
-$statusReportArr = [
-   1 => [
-      "value" => "Đang xử lý",
-      "color" => "secondary"
-   ],
-   2 => [
-      "value" => "Chấp nhận",
-      "color" => "success"
-   ],
-   3 => [
-      "value" => "Trả sửa",
-      "color" => "danger"
-   ],
-   4 => [
-      "value" => "Nhận tiền trừ",
-      "color" => "warning"
-   ]
-   ];
-
-$listUsersXX = getRaw("SELECT id, fullname, email FROM users WHERE group_id = 4");
-$listUsersQD = getRaw("SELECT id, fullname, email FROM users WHERE group_id = 5");
-$listUsersPD = getRaw("SELECT id, fullname, email FROM users WHERE group_id = 6");
+   $statusReportArr = [
+      1 => [
+         "value" => "Đang xử lý",
+         "color" => "secondary"
+      ],
+      2 => [
+         "value" => "Chấp nhận",
+         "color" => "success"
+      ],
+      3 => [
+         "value" => "Trả sửa",
+         "color" => "danger"
+      ],
+      4 => [
+         "value" => "Nhận tiền trừ",
+         "color" => "warning"
+      ]
+      ];
+   
+   $listUsersXX = getRaw("SELECT id, fullname, email FROM users WHERE group_id = 4");
+   $listUsersQD = getRaw("SELECT id, fullname, email FROM users WHERE group_id = 5");
+   $listUsersPD = getRaw("SELECT id, fullname, email FROM users WHERE group_id = 6");
 
  $listAllFactories = getRaw("SELECT id, name FROM factories");
  $listAllProducts = getRaw("SELECT id, name, cate_id FROM products");
  $listAllProductCates = getRaw("SELECT id, name FROM product_categories");
  $listAllDefectCates = getRaw("SELECT id, name FROM defect_categories");
  $listAllDefects = getRaw("SELECT id, name FROM defects");
- $listAllReportDefects = [];
 
- if(!empty(getSession("listAllReportDefectsAdd"))) {
-   $listAllReportDefects = getSession("listAllReportDefectsAdd");
-} else {
-   setSession("listAllReportDefectsAdd", $listAllReportDefects);
+
+if(isGet()) {
+   $reportId = trim(getBody('get')['id']);
+   if(!empty($reportId)) {
+      $defaultReport = firstRaw("SELECT rp.factory_id, rp.product_id, rp.status, rs.userXX, rs.userQD, rs.userPD, f.name, p.name, po_code, conclusion, code_report, defect_finder, quantity_deliver, comment, suggest, rp.create_at FROM reports AS rp JOIN report_categories AS rp_c ON rp.cate_id = rp_c.id JOIN users AS u ON rp.user_id = u.id JOIN factories AS f ON rp.factory_id = f.id JOIN products AS p ON rp.product_id = p.id JOIN resultaql AS ra ON rp.id = ra.report_id JOIN report_sign As rs ON rs.report_id = rp.id WHERE rp.id = $reportId");;
+      setFlashData('defaultReport', $defaultReport);
+   } else {
+      redirect("admin/?module=reports");
+   }
 }
 
-$userId = isLogin()['user_id'];
+
+
+if(!empty(getBody('post')['id'])) {
+   $reportId = getBody('post')['id'];
+}
+
+$listAllReportDefects = getRaw("SELECT rd.id, df.name, df.level, df.skip, rd.defect_id, df.cate_id, (SELECT name FROM defect_categories WHERE df.cate_id = id) AS cate_defect_name, rd.defect_quantity, rd.note, rd.create_at FROM report_defect as rd JOIN defects as df ON df.id = rd.defect_id WHERE rd.report_id = $reportId ORDER BY cate_defect_name DESC");
+
+
+foreach($listAllReportDefects as $key=>$value) {
+   $rdId = $value['id'];
+   $listAllImages = getRaw("SELECT * FROM report_defect_images WHERE report_defect_id = $rdId");
+   foreach($listAllImages as $image) {
+      $listAllReportDefects[$key]['files'][] = [
+         'fileOr'=>$image['nameOr'],
+         'file_name'=>$image['name'],
+         'link'=>$image['image_link']
+      ];
+   }
+}
+if(!empty(getSession("listAllReportDefects[$reportId]"))) {
+   $listAllReportDefects = getSession("listAllReportDefects[$reportId]");
+} else {
+   setSession("listAllReportDefects[$reportId]", $listAllReportDefects);
+}
 
  if(isPost()) {
 
@@ -103,6 +133,7 @@ $userId = isLogin()['user_id'];
       }
    }
 
+   
    if(empty($status)) {
       $errors['status']['required'] = 'Vui lòng chọn trạng thái';
    }
@@ -125,10 +156,8 @@ $userId = isLogin()['user_id'];
 
    if(empty($errors)) {
       // Không có lỗi xảy ra
-      // data insert report
-      $dataInsertReport = [
-         'cate_id' => 1,
-         'user_id' => $userId,
+      //update report
+      $dataUpdateReport = [
          'code_report' => $codeReport,
          'factory_id' => $factoryId,
          'product_id' => $productId,
@@ -138,114 +167,175 @@ $userId = isLogin()['user_id'];
          'quantity_inspect' => $quantityInspect,
          'comment' => $comment,
          'suggest' => $suggest,
-         'status' => $status,
-         'create_at' => date('Y-m-d H:i:s'),
+         'status'=> $status,
+         'update_at' => date('Y-m-d H:i:s'),
       ];
-   
-      $statusInsertReport = insert('reports', $dataInsertReport);
-      if($statusInsertReport) {
-         $reportId = insertId();
 
-         //Thêm ràng buộc chữ ký cho report
-         $userXX = '{"user_id":'.$userXXId.', "status":0}';
-         $userQD = '{"user_id":'.$userQDId.', "status":0}';
-         $userPD = '{"user_id":'.$userPDId.', "status":0}';
-         $dataInsertReportSign = [
-            'report_id' => $reportId,
-            "userXX" => $userXX,
-            "userQD" => $userQD,
-            "userPD" => $userPD,
-         ];
+      //thay đổi người ký => status trả về 0, không thay đổi => giữ nguyên status
 
-         $statusinsertReportSign = insert('report_sign', $dataInsertReportSign);
+      $dataUpdateReportSign = [
+         "userXX_id" => $userXXId,
+         "userQD_id" => $userQDId,
+         "userPD_id" => $userPDId
+      ];
+      //Mảng sau khi hoàn thành việc thêm và xóa
+      $listAllReportDefectFinal = [];
 
-         $addStatus = true;
-         // Thêm report_defect
-         if(!empty($listAllReportDefects)) {
-            foreach($listAllReportDefects as $itemAdd) {
-               $dataInsertReportDefect = [
-                  "report_id" => $reportId,
-                  "defect_id" => $itemAdd["defect_id"],
-                  "defect_quantity" => $itemAdd["defect_quantity"],
-                  'note' => $itemAdd["note"],
-                  'create_at' => date('Y-m-d H:i:s')
-               ];
+      $listAllReportDefectHaveId = [];
+      $listAllReportDefectToAdd = [];
+      foreach($listAllReportDefects as $item) {
+         if(isset($item['id'])) {
+            $listAllReportDefectHaveId[] = $item;
+         } else {
+            $listAllReportDefectToAdd[] = $item;
+            $listAllReportDefectFinal[] = $item;
+         }
+      }
 
-               $statusInsertReportDefect = insert('report_defect', $dataInsertReportDefect);
-               if($statusInsertReportDefect) {
-                  if(!empty($itemAdd['files'])) {
-                     $reportDefectId = firstRaw("SELECT id FROM report_defect WHERE report_id = $reportId AND defect_id = ".$itemAdd['defect_id'])['id'];
-                     foreach($itemAdd['files'] as $file) {
-                        $dataInsertImage = [
-                           'image_link' => $file['link'],
-                           'name' => $file['file_name'],
-                           'nameOr' => $file['fileOr'],
-                           'report_defect_id' => $reportDefectId,
-                           'create_at' => date('Y-m-d H:i:s')
-                        ];
+      $listAllRD = getRaw("SELECT rd.id, df.name, df.level, df.skip, rd.defect_id, df.cate_id, (SELECT name FROM defect_categories WHERE df.cate_id = id) AS cate_defect_name, rd.defect_quantity, rd.note, rd.create_at FROM report_defect as rd JOIN defects as df ON df.id = rd.defect_id WHERE rd.report_id = $reportId ORDER BY cate_defect_name DESC");
 
-                        $statusInsertImage = insert('report_defect_images', $dataInsertImage);
-                        if($statusInsertImage) {
 
-                        } else {
-                           setFlashData('msg', 'Lỗi hệ thống. Vui lòng thử lại sau.(statusInsertImage)');
-                           setFlashData('msg_type', 'danger');
-                           $addStatus = false;
-                           break;
-                        }
-                     }
-                  }
-               } else {
-                  setFlashData('msg', 'Lỗi hệ thống. Vui lòng thử lại sau.(statusInsertReportDefect)');
-                  setFlashData('msg_type', 'danger');
-                  $addStatus = false;
-                  break;
-               }
+      $listAllReportDefectToDelete = [];
+      foreach($listAllRD as $item1) {
+         $found = false;
+         foreach($listAllReportDefectHaveId as $item2) {
+            if($item1['id'] == $item2['id']) {
+               $found = true;
+               break;
             }
          }
+         if(!$found) {
+            $listAllReportDefectToDelete[] = $item1;
+         } else {
+            $listAllReportDefectFinal[] = $item1;
+         }
+      }
 
-         // insertAQL
-         if($addStatus && $statusinsertReportSign) {
-            // lấy ra số lượng lỗi được cho phép
-            $quantityDefectAccess = AQL($quantityDeliver);   
-            $criticalDefects = $quantityDefectAccess['criticalDefects'];
-            $majorDefects = $quantityDefectAccess['majorDefects'];
-            $minorDefects = $quantityDefectAccess['minorDefects'];
+      //status của delete và add và updateAQL
+      $addStatus = true;
+      $deleteStatus = true;
+      $updateAQL = true;
 
-            //Lấy ra số lỗi thực tế
-            
-            $quantityDefectReal = getSumDefectByType($listAllReportDefects);
-            $sumCriticalDefects = $quantityDefectReal['sumCriticalDefects'];
-            $sumMajorDefects = $quantityDefectReal['sumMajorDefects'];
-            $sumMinorDefects = $quantityDefectReal['sumMinorDefects'];
+      //xóa report_defect
+      if(!empty($listAllReportDefectToDelete)) {
+         foreach($listAllReportDefectToDelete as $itemDelete) {
+            $reportDefectId = $itemDelete['id'];
+            $deleteImagesStatus = delete('report_defect_images', "report_defect_id = $reportDefectId");
+            if($deleteImagesStatus) {
+               $deleteReportDefectStatus = delete('report_defect', "id = $reportDefectId");
+               if($deleteReportDefectStatus) {
+   
+               } else {
+                  setFlashData('msg', 'Lỗi hệ thống. Vui lòng thử lại sau.(deleteReportDefectStatus)');
+                  setFlashData('msg_type', 'danger');
+                  $deleteStatus = false;
+                  break;
+               }
+            } else {
+               setFlashData('msg', 'Lỗi hệ thống. Vui lòng thử lại sau. (deleteImagesStatus)');
+               setFlashData('msg_type', 'danger');
+               $deleteStatus = false;
+               break;
+            }
+         }
+      }
 
-            //Lấy ra kết quả AQL
-            $resultAQL = checkResultAQL($quantityDeliver, $sumCriticalDefects, $sumMajorDefects, $sumMinorDefects);
-
-            // data updates to resultaql
-            $dataInsertResultAql= [
+      //Thêm report_defect
+      if(!empty($listAllReportDefectToAdd)) {
+         foreach($listAllReportDefectToAdd as $itemAdd) {
+            $dataInsertReportDefect = [
                "report_id" => $reportId,
-               "quantity_serious_accept" => $criticalDefects,
-               "quantity_heavy_accept" => $majorDefects,
-               "quantity_light_accept" => $minorDefects,
-               "quantity_serious_real" => $sumCriticalDefects,
-               "quantity_heavy_real" => $sumMajorDefects,
-               "quantity_light_real" => $sumMinorDefects,
-               "conclusion" => $resultAQL,
-               'create_at' => date("Y-m-d H-i-s")
+               "defect_id" => $itemAdd["defect_id"],
+               "defect_quantity" => $itemAdd["defect_quantity"],
+               'note' => $itemAdd["note"],
+               'create_at' => date('Y-m-d H:i:s')
             ];
 
-            $insertResultAqlStatus = insert('resultaql', $dataInsertResultAql);
-            if($insertResultAqlStatus) {
-               removeSession("listAllReportDefectsAdd");
-               setFlashData('msg', 'Thêm biên bản thành công.');
-               setFlashData('msg_type', 'success');
+            $statusInsertReportDefect = insert('report_defect', $dataInsertReportDefect);
+            if($statusInsertReportDefect) {
+               if(!empty($itemAdd['files'])) {
+                  $reportDefectId = firstRaw("SELECT id FROM report_defect WHERE report_id = $reportId AND defect_id = ".$itemAdd['defect_id'])['id'];
+                  foreach($itemAdd['files'] as $file) {
+                     $dataInsertImage = [
+                        'image_link' => $file['link'],
+                        'name' => $file['file_name'],
+                        'nameOr' => $file['fileOr'],
+                        'report_defect_id' => $reportDefectId,
+                        'create_at' => date('Y-m-d H:i:s')
+                     ];
+
+                     $statusInsertImage = insert('report_defect_images', $dataInsertImage);
+                     if($statusInsertImage) {
+
+                     } else {
+                        setFlashData('msg', 'Lỗi hệ thống. Vui lòng thử lại sau.(statusInsertImage)');
+                        setFlashData('msg_type', 'danger');
+                        $addStatus = false;
+                        break;
+                     }
+                  }
+               }
             } else {
                setFlashData('msg', 'Lỗi hệ thống. Vui lòng thử lại sau.(statusInsertReportDefect)');
                setFlashData('msg_type', 'danger');
+               $addStatus = false;
+               break;
             }
-            redirect('admin/?module=reports');
          }
+      }
+
+      //updateAQL
+      if($addStatus && $deleteStatus) {
+         // lấy ra số lượng lỗi được cho phép
+         $quantityDefectAccess = AQL($quantityDeliver);   
+         $criticalDefects = $quantityDefectAccess['criticalDefects'];
+         $majorDefects = $quantityDefectAccess['majorDefects'];
+         $minorDefects = $quantityDefectAccess['minorDefects'];
+
+         //Lấy ra số lỗi thực tế
+         $quantityDefectReal = getSumDefectByType($listAllReportDefectFinal);
+         $sumCriticalDefects = $quantityDefectReal['sumCriticalDefects'];
+         $sumMajorDefects = $quantityDefectReal['sumMajorDefects'];
+         $sumMinorDefects = $quantityDefectReal['sumMinorDefects'];
+
+         //Lấy ra kết quả AQL
+         $resultAQL = checkResultAQL($quantityDeliver, $sumCriticalDefects, $sumMajorDefects, $sumMinorDefects);
+
+         //data updates to resultaql
+         $dataUpdateResultAql= [
+            "quantity_serious_accept" => $criticalDefects,
+            "quantity_heavy_accept" => $majorDefects,
+            "quantity_light_accept" => $minorDefects,
+            "quantity_serious_real" => $sumCriticalDefects,
+            "quantity_heavy_real" => $sumMajorDefects,
+            "quantity_light_real" => $sumMinorDefects,
+            "conclusion" => $resultAQL,
+            'update_at' => date("Y-m-d H-i-s")
+         ];
+
+         $updateResultAqlStatus = update('resultaql', $dataUpdateResultAql, "report_id = $reportId");
+         if($updateResultAqlStatus) {
+
+         } else {
+            setFlashData('msg', 'Lỗi hệ thống. Vui lòng thử lại sau.(statusInsertReportDefect)');
+            setFlashData('msg_type', 'danger');
+            $updateAQL = false;
+         }
+      }
+
+      if($updateAQL) {
+         //update thông tin report
+         $updateStatus = update('reports', $dataUpdateReport, "id=$reportId");
+         $updateStatusReportSign = update('report_sign', $dataUpdateReportSign, "report_id=$reportId");
+         if($updateStatus && $updateStatusReportSign) {
+               removeSession("listAllReportDefects[$reportId]");
+               setFlashData('msg', 'Chỉnh sửa biên bản thành công.');
+               setFlashData('msg_type', 'success');
+         } else {
+            setFlashData('msg', 'Lỗi hệ thống. Vui lòng thử lại sau.');
+            setFlashData('msg_type', 'danger');
+         }
+         // redirect('admin/?module=reports');
       }
    } else {
       if(!empty($errors['listAllReportDefects']['required'])) {
@@ -253,10 +343,9 @@ $userId = isLogin()['user_id'];
       } else {
          setFlashData('msg', 'Vui lòng kiểm tra dữ liệu nhập vào!');
       }
-      setFlashData('msg_type', 'danger');
       setFlashData('errors', $errors);
       setFlashData('old', $body);
-      redirect("admin/?module=reports&action=add");
+      // redirect("admin/?module=reports&action=edit&id=$reportId");
    }
 
 }
@@ -265,12 +354,28 @@ $msg = getFlashData('msg');
 $msgType = getFlashData('msg_type');
 $errors = getFlashData('errors');
 $old = getFlashData('old');
+$defaultReport = getFlashData('defaultReport');
+
+if(empty($old)) {
+   $old = $defaultReport;
+}
+
+//Xử lý AQL
+// lấy ra số lượng lỗi được cho phép
+$quantityDeliver = old('quantity_deliver', $old);
+$quantityDefectAccess = AQL($quantityDeliver);   
+$criticalDefects = $quantityDefectAccess['criticalDefects'];
+$majorDefects = $quantityDefectAccess['majorDefects'];
+$minorDefects = $quantityDefectAccess['minorDefects'];
 
 //Lấy ra số lỗi thực tế
 $quantityDefectReal = getSumDefectByType($listAllReportDefects);
 $sumCriticalDefects = $quantityDefectReal['sumCriticalDefects'];
 $sumMajorDefects = $quantityDefectReal['sumMajorDefects'];
 $sumMinorDefects = $quantityDefectReal['sumMinorDefects'];
+
+//Lấy ra kết quả AQL
+$resultAQL = checkResultAQL($quantityDeliver, $sumCriticalDefects, $sumMajorDefects, $sumMinorDefects);
 
  ?>
 
@@ -281,6 +386,7 @@ $sumMinorDefects = $quantityDefectReal['sumMinorDefects'];
          <?php 
             getMsg($msg, $msgType);
          ?>
+
          <form action="" method="post">
             <div class="row">
                <div class="col-6">
@@ -459,56 +565,7 @@ $sumMinorDefects = $quantityDefectReal['sumMinorDefects'];
                   </div>
                </div>
             </div>
-            <div class="col-12">
-               <hr>
-            </div>
-            <table class="table table-bordered mb-0">
-               <tbody>
-                  <tr>
-                     <td rowspan="4" width="13%" style="text-align: left; vertical-align: middle;"><b>Kết quả AQL</b>
-                     </td>
-                     <td width="21%"><b>AQL 2.5-4.0 Level II</b></td>
-                     <td width="19.5%"><b>Số lỗi tối đa cho phép</b></td>
-                     <td class="text-center" width="27.54%"><b>Số lỗi thực tế</b></td>
-                  </tr>
-                  <tr>
-                     <td><b>Nghiêm trọng</b></td>
-                     <td class="text-center"><?php echo empty($criticalDefects) ? 0 : $criticalDefects ?></td>
-                     <td class="text-center" id="sumCriticalDefects">
-                        <?php echo empty($sumCriticalDefects) ? 0 : $sumCriticalDefects ?></td>
-                  </tr>
-                  <tr>
-                     <td><b>Nặng</b></td>
-                     <td class="text-center" id="majorDefects"><?php echo empty($majorDefects) ? 0 : $majorDefects ?>
-                     </td>
-                     <td class="text-center" id="sumMajorDefects">
-                        <?php echo empty($sumMajorDefects) ? 0 : $sumMajorDefects ?>
-                     </td>
-                  </tr>
-                  <tr>
-                     <td><b>Nhẹ</b></td>
-                     <td class="text-center" id="minorDefects"><?php echo empty($minorDefects) ? 0 : $minorDefects ?>
-                     </td>
-                     <td class="text-center" id="sumMinorDefects">
-                        <?php echo empty($sumMinorDefects) ? 0 : $sumMinorDefects ?>
-                     </td>
-                  </tr>
-                  <tr>
-                     <td><b>Kết luận:</b></td>
-                     <td class="text-center" id="achieve"><i
-                           class="far <?php echo ($resultAQL == 2) ? 'fa-check-square' : 'fa-square' ?> mr-2"></i>ĐẠT
-                     </td>
-                     <td class="text-center" id="not-achieve"><i
-                           class="far <?php echo ($resultAQL == 1) ? 'fa-check-square' : 'fa-square' ?> mr-2"></i>KHÔNG
-                        ĐẠT</td>
-                     <td class="text-center"><i class="far fa-square mr-2"></i>CHỜ
-                        XỬ LÝ</td>
-                  </tr>
-               </tbody>
-            </table>
-            <div class="col-12">
-               <hr>
-            </div>
+            <hr>
             <div class="row">
                <div class="col-12 row">
                   <div class="col-4 d-flex">
@@ -583,6 +640,49 @@ $sumMinorDefects = $quantityDefectReal['sumMinorDefects'];
                <div class="col-12">
                   <hr>
                </div>
+               <table class="table table-bordered mb-0">
+                  <tbody>
+                     <tr>
+                        <td rowspan="4" width="13%" style="text-align: left; vertical-align: middle;"><b>Kết quả AQL</b>
+                        </td>
+                        <td width="21%"><b>AQL 2.5-4.0 Level II</b></td>
+                        <td width="19.5%"><b>Số lỗi tối đa cho phép</b></td>
+                        <td class="text-center" width="27.54%"><b>Số lỗi thực tế</b></td>
+                     </tr>
+                     <tr>
+                        <td><b>Nghiêm trọng</b></td>
+                        <td class="text-center"><?php echo $criticalDefects ?></td>
+                        <td class="text-center" id="sumCriticalDefects">
+                           <?php echo $sumCriticalDefects ?></td>
+                     </tr>
+                     <tr>
+                        <td><b>Nặng</b></td>
+                        <td class="text-center" id="majorDefects"><?php echo $majorDefects ?></td>
+                        <td class="text-center" id="sumMajorDefects"><?php echo $sumMajorDefects ?>
+                        </td>
+                     </tr>
+                     <tr>
+                        <td><b>Nhẹ</b></td>
+                        <td class="text-center" id="minorDefects"><?php echo $minorDefects ?></td>
+                        <td class="text-center" id="sumMinorDefects"><?php echo $sumMinorDefects ?>
+                        </td>
+                     </tr>
+                     <tr>
+                        <td><b>Kết luận:</b></td>
+                        <td class="text-center" id="achieve"><i
+                              class="far <?php echo ($resultAQL == 2) ? 'fa-check-square' : 'fa-square' ?> mr-2"></i>ĐẠT
+                        </td>
+                        <td class="text-center" id="not-achieve"><i
+                              class="far <?php echo ($resultAQL == 1) ? 'fa-check-square' : 'fa-square' ?> mr-2"></i>KHÔNG
+                           ĐẠT</td>
+                        <td class="text-center"><i class="far fa-square mr-2"></i>CHỜ
+                           XỬ LÝ</td>
+                     </tr>
+                  </tbody>
+               </table>
+               <div class="col-12">
+                  <hr>
+               </div>
                <h4 class="col-12 text-center">Bảng danh sách lỗi</h4>
                <div class="container">
                   <table class="table table-bordered">
@@ -647,7 +747,7 @@ $sumMinorDefects = $quantityDefectReal['sumMinorDefects'];
                                     endforeach; else:
                                  ?>
                         <tr>
-                           <td colspan="10" class="text-center alert alert-danger">Không có lỗi</td>
+                           <td colspan="10" class="text-center alert alert-danger">Không có biên bản</td>
                         </tr>
                         <?php endif; ?>
                      </tbody>
@@ -658,8 +758,10 @@ $sumMinorDefects = $quantityDefectReal['sumMinorDefects'];
                <div class="col">
                   <input type="hidden" name="module" value="reports">
                   <input type="hidden" name="quantity_inspect" value="">
+                  <input type="hidden" name="id" value="<?php echo $reportId ?>">
 
-                  <button class="btn btn-success" type="submit" name="submit_edit">Thêm</button>
+                  <button class="btn btn-primary" type="submit" name="submit_edit">Sửa</button>
+                  <a href="<?php echo getLinkAdmin('reports')?>" class="btn btn-success" type="submit">Quay lại</a>
                </div>
             </div>
          </form>

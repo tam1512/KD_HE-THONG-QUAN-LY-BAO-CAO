@@ -11,21 +11,16 @@ if(!empty(getBody('get')['action_old'])) {
 $listAllReportDefects = getRaw("SELECT rd.id, df.name, df.level, df.skip, rd.defect_id, df.cate_id, (SELECT name FROM defect_categories WHERE df.cate_id = id) AS cate_defect_name, rd.defect_quantity, rd.note, rd.create_at FROM report_defect as rd JOIN defects as df ON df.id = rd.defect_id WHERE rd.report_id = $reportId ORDER BY cate_defect_name DESC");
 
 
-$report = firstRaw("SELECT rp.po_code, rp.code_report, rp.defect_finder, rp.quantity_deliver, rp.quantity_inspect, rp.comment, rp.suggest, rp.user_id, rs.userXX, rs.userQD, rs.userPD, f.name AS factory_name, p.name AS product_name, rp.create_at FROM reports AS rp JOIN factories AS f ON f.id = rp.factory_id JOIN products AS p ON p.id = rp.product_id JOIN report_sign AS rs ON report_id = rp.id WHERE rp.id = $reportId");
+$report = firstRaw("SELECT rp.po_code, rp.code_report, rp.defect_finder, rp.quantity_deliver, rp.quantity_inspect, rp.comment, rp.suggest, rp.user_id, rs.userXX_id, rs.userQD_id, rs.userPD_id, rs.status_userXX, rs.status_userQD, rs.status_userPD, f.name AS factory_name, p.name AS product_name, rp.create_at FROM reports AS rp JOIN factories AS f ON f.id = rp.factory_id JOIN products AS p ON p.id = rp.product_id JOIN report_sign AS rs ON report_id = rp.id WHERE rp.id = $reportId");
 
 $sign_userKT = firstRaw("SELECT sign_text FROM sign WHERE user_id = ". $report["user_id"])['sign_text'];
+$sign_userXX = !empty(firstRaw("SELECT sign_text FROM sign WHERE user_id = ". $report["userXX_id"])['sign_text']) ? firstRaw("SELECT sign_text FROM sign WHERE user_id = ". $report["userXX_id"])['sign_text'] : false;
+$sign_userQD = !empty(firstRaw("SELECT sign_text FROM sign WHERE user_id = ". $report["userQD_id"])['sign_text']) ? firstRaw("SELECT sign_text FROM sign WHERE user_id = ". $report["userQD_id"])['sign_text'] : false;
+$sign_userPD = !empty(firstRaw("SELECT sign_text FROM sign WHERE user_id = ". $report["userPD_id"])['sign_text']) ? firstRaw("SELECT sign_text FROM sign WHERE user_id = ". $report["userPD_id"])['sign_text'] : false;
 
-$userXX = json_decode($report["userXX"]);
-$userQD = json_decode($report["userQD"]);
-$userPD = json_decode($report["userPD"]);
-
-$sign_userXX = !empty(firstRaw("SELECT sign_text FROM sign WHERE user_id = ". $userXX->user_id)['sign_text']) ? firstRaw("SELECT sign_text FROM sign WHERE user_id = ". $userXX->user_id)['sign_text'] : false;
-$sign_userQD = !empty(firstRaw("SELECT sign_text FROM sign WHERE user_id = ". $userQD->user_id)['sign_text']) ? firstRaw("SELECT sign_text FROM sign WHERE user_id = ". $userQD->user_id)['sign_text'] : false;
-$sign_userPD = !empty(firstRaw("SELECT sign_text FROM sign WHERE user_id = ". $userPD->user_id)['sign_text']) ? firstRaw("SELECT sign_text FROM sign WHERE user_id = ". $userPD->user_id)['sign_text'] : false;
-
-$status_userXX = $userXX->status;
-$status_userQD = $userQD->status;
-$status_userPD = $userPD->status;
+$status_userXX = $report["status_userXX"];
+$status_userQD = $report["status_userQD"];
+$status_userPD = $report["status_userPD"];
 
 $resultAQL = firstRaw("SELECT * FROM resultaql WHERE report_id = $reportId");
 $dateCreateStr = $report['create_at'];

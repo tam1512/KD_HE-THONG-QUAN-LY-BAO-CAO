@@ -23,9 +23,9 @@ $sign_userXX = !empty(firstRaw("SELECT sign_text FROM sign WHERE user_id = ". $u
 $sign_userQD = !empty(firstRaw("SELECT sign_text FROM sign WHERE user_id = ". $userQD->user_id)['sign_text']) ? firstRaw("SELECT sign_text FROM sign WHERE user_id = ". $userQD->user_id)['sign_text'] : false;
 $sign_userPD = !empty(firstRaw("SELECT sign_text FROM sign WHERE user_id = ". $userPD->user_id)['sign_text']) ? firstRaw("SELECT sign_text FROM sign WHERE user_id = ". $userPD->user_id)['sign_text'] : false;
 
-$status_userXX = $userXX->status;
-$status_userQD = $userQD->status;
-$status_userPD = $userPD->status;
+$status_userXX = $report["status_userXX"];
+$status_userQD = $report["status_userQD"];
+$status_userPD = $report["status_userPD"];
 
 $resultAQL = firstRaw("SELECT * FROM resultaql WHERE report_id = $reportId");
 $dateCreateStr = $report['create_at'];

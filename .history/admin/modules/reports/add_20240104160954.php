@@ -147,9 +147,9 @@ $userId = isLogin()['user_id'];
          $reportId = insertId();
 
          //Thêm ràng buộc chữ ký cho report
-         $userXX = '{"user_id":'.$userXXId.', "status":0}';
-         $userQD = '{"user_id":'.$userQDId.', "status":0}';
-         $userPD = '{"user_id":'.$userPDId.', "status":0}';
+         $userXX = '{"user_id":'."$userXXId".', "status":"0"}';
+         $userQD = '{"user_id":'."$userQDId".', "status":"0"}';
+         $userPD = '{"user_id":'."$userPDId".', "status":"0"}';
          $dataInsertReportSign = [
             'report_id' => $reportId,
             "userXX" => $userXX,

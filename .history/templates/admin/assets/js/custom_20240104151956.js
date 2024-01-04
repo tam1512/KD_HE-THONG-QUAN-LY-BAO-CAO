@@ -541,10 +541,7 @@ function handelResult(AQL) {
 
 //sign
 $(function () {
-  var sign = $("#signature").signature({
-    syncField: "#sign-text",
-    syncFormat: "PNG",
-  });
+  var sign = $("#signature").signature({ syncField: "#sign-text" });
   var signText = $("#sign-text");
   var signTextVal = signText.val();
   if (signTextVal) {
@@ -559,6 +556,9 @@ $(function () {
     var disable = $(this).text() === "Xác nhận";
     $(this).text(disable ? "Chỉnh sửa" : "Xác nhận");
     sign.signature(disable ? "disable" : "enable");
+    if (disable) {
+      signText.val(sign.signature("toJSON"));
+    }
   });
   $("#clear").click(function (e) {
     e.preventDefault();

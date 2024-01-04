@@ -76,6 +76,10 @@ $userId = isLogin()['user_id'];
    $userQDId = trim($body['userQD_id']);
    $userPDId = trim($body['userPD_id']);
 
+   $userXX = '{"user_id":'."$userXXId".', "status":"0"}';
+   $userQD = '{"user_id":'."$userQDId".', "status":"0"}';
+   $userPD = '{"user_id":'."$userPDId".', "status":"0"}';
+
    if(empty($codeReport)) {
       $errors['code_report']['required'] = 'Mã báo cáo không được bỏ trống';
    }
@@ -147,14 +151,11 @@ $userId = isLogin()['user_id'];
          $reportId = insertId();
 
          //Thêm ràng buộc chữ ký cho report
-         $userXX = '{"user_id":'.$userXXId.', "status":0}';
-         $userQD = '{"user_id":'.$userQDId.', "status":0}';
-         $userPD = '{"user_id":'.$userPDId.', "status":0}';
          $dataInsertReportSign = [
             'report_id' => $reportId,
-            "userXX" => $userXX,
-            "userQD" => $userQD,
-            "userPD" => $userPD,
+            "userXX_id" => $userXXId,
+            "userQD_id" => $userQDId,
+            "userPD_id" => $userPDId,
          ];
 
          $statusinsertReportSign = insert('report_sign', $dataInsertReportSign);
