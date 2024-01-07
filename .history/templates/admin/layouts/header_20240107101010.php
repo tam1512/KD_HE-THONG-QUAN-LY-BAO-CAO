@@ -168,7 +168,7 @@ if(!empty($queryToken)) {
          <ul class="navbar-nav ml-auto">
             <!-- Notifications Dropdown Menu -->
             <li class="nav-item dropdown">
-               <a class="nav-link" data-toggle="dropdown" href="#" id="notification_click">
+               <a class="nav-link" data-toggle="dropdown" href="#">
                   <i class="far fa-bell"></i>
                   <span class="badge badge-danger navbar-badge"
                      id="count_notification"><?php echo !empty($listNotificationsByUser) ? count($listNotificationsByUser) : 0 ?></span>

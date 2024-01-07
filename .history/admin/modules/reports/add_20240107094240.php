@@ -165,13 +165,11 @@ $signText = firstRaw("SELECT sign_text FROM sign WHERE user_id = $userId");
          $userXXNoti = '{"user_id":'.$userXXId.', "seen":2}';
          $userQDNoti = '{"user_id":'.$userQDId.', "seen":2}';
          $userPDNoti = '{"user_id":'.$userPDId.', "seen":2}';
-         $userKTNoti = '{"user_id":'.$userId.', "seen":2}';
          $dataInsertNoti = [
             'report_id' => $reportId,
             "userXX" => $userXXNoti,
             "userQD" => $userQDNoti,
             "userPD" => $userPDNoti,
-            "userKT" => $userKTNoti
          ];
 
          $statusinsertNoti = insert('notifications', $dataInsertNoti);

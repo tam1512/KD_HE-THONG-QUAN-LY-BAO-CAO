@@ -16,13 +16,13 @@ if(!isLogin()) {
    layout('breadcrumb', 'admin', $data);
 
    $signText = firstRaw("SELECT sign_text FROM sign WHERE user_id = $userId");
-
-   $message = getFlashData('msg');
-   $msgType = getFlashData('msg_type');
    if(empty($signText)) {
       setFlashData('msg', 'Chưa có chữ ký vui lòng tạo chữ ký');
       setFlashData('msg_type', 'danger');
    }
+
+   $message = getFlashData('msg');
+   $msgType = getFlashData('msg_type');
 ?>
 <!-- Main content -->
 <section class="content">

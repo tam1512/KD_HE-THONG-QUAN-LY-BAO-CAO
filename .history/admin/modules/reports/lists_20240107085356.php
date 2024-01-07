@@ -114,9 +114,6 @@ if(isGet()) {
       }
       $filter .= "$operator conclusion = $conclusion"; 
    }
-   if(!empty(getBody()["status"])) {
-      $statusSign = trim(getBody()["status"]);
-   }
 }
 
 // Xử lý phân trang
@@ -668,19 +665,6 @@ $msgType = getFlashData('msg_type');
             </div>
             <div class="col-3">
                <div class="form-group">
-                  <select name="status" id="status" class="form-control">
-                     <option value="0">Chọn trạng thái ký</option>
-                     <option value="1" <?php echo (!empty($statusSign) && $statusSign == 1) ? 'selected' : false ?>>
-                        Đã ký
-                     </option>
-                     <option value="2" <?php echo (!empty($statusSign) && $statusSign == 2) ? 'selected' : false ?>>
-                        Chưa ký
-                     </option>
-                  </select>
-               </div>
-            </div>
-            <div class="col-3">
-               <div class="form-group">
                   <select name="choose" id="choose" class="form-control">
                      <?php 
                         if(!empty($listChooses)):
@@ -729,9 +713,12 @@ $msgType = getFlashData('msg_type');
                   $user_id = isLogin()['user_id'];
                   $isEmpty = true;
                   foreach($listReportOnPage as $report):
+                     $count++;
                      $status = null;
-                     if($report['user_id'] == $user_id) {
+                     if($report['user_id'] == $user_id && !empty($signText)) {
                         $status = 1;
+                     } else if(empty($signText)) {
+                        $status = 3;
                      } else {
                         $userXX = json_decode($report['userXX'], true);
                         $userQD = json_decode($report['userQD'], true);
@@ -751,13 +738,12 @@ $msgType = getFlashData('msg_type');
                      }
 
                      if($status != null):
-                        if(!empty($statusSign) && $statusSign == $status):
-                           $count++;
-                           $isEmpty = false;
+                        $isEmpty = false;
             ?>
             <tr>
                <td><?php echo $count ?></td>
                <td>
+                  <?php echo $status ?>
                   <a
                      href="<?php echo getLinkAdmin('reports', "", ['user_id'=>$report['user_id']])?>"><?php echo $report['name_user']  ?></a>
                </td>
@@ -769,87 +755,12 @@ $msgType = getFlashData('msg_type');
                </td>
                <td>
                   <?php echo $report['po_code'];
-                  if($status == 1 && !empty($signText)) {
+                  if($status == 1) {
                      echo '<span class="btn btn-success">Đã ký</span>';
-                  } else if (($status == 1 && empty($signText)) || ($status == 2 && empty($signText))) {
+                  } else if ($status == 3) {
                      echo '<a href="'.getLinkAdmin('users', 'sign').'" class="btn btn-warning">Tạo chữ ký</a>';
                   } else {
-                     echo '<a class="btn btn-danger" href="'.getLinkAdmin('users', 'quick_sign', ["report_id" => $report['id'], "page" => $page]).'">Ký ngay</a>';
-                  }
-                  ?>
-               </td>
-               <td><a href="<?php echo getLinkAdmin('reports', "", ['conclusion'=>$report['conclusion']])?>">
-                     <?php
-                        if($report['conclusion']  == 1 ) {
-                           echo 'Chưa đạt';
-                        } 
-                        if($report['conclusion']  == 2 ) {
-                           echo 'Đạt';
-                        } 
-                        if($report['conclusion']  == 3 ) {
-                           echo 'Chờ xử lý';
-                        } 
-                        
-                     ?>
-                  </a>
-               </td>
-               <td><?php echo getDateFormat($report["create_at"], 'd/m/Y H:i:s') ?></td>
-               <td>
-                  <?php 
-                     $valueStatus = null;
-                     $colorStatus = null;
-                     foreach($statusReportArr as $key => $value) {
-                        if($key == $report['status']) {
-                           $valueStatus = $value['value'];
-                           $colorStatus = $value['color'];
-                        }
-                     }
-                  ?>
-                  <lable class="btn btn-<?php echo $colorStatus?>"><?php echo $valueStatus ?></lable>
-               </td>
-               <td class="text-center"><a class="btn btn-success"
-                     href="<?php echo getLinkAdmin('reports', 'seen', ['id' => $report['id']]) ?>"><i
-                        class="far fa-eye"></i></a></td>
-               <td class="text-center">
-                  <a class="btn btn-warning"
-                     href="<?php echo getLinkAdmin('reports', 'edit', ['id' => $report['id']]) ?>"><i
-                        class="far fa-edit"></i></a>
-               </td>
-               <td class="text-center">
-                  <a class="btn btn-danger" onclick="return confirm('Bạn có chắc chắn muốn xóa?')"
-                     href="<?php echo getLinkAdmin('reports', 'delete', ['id' => $report['id']]) ?>"><i
-                        class="fa fa-trash"></i></a>
-               </td>
-               <td class="text-center">
-                  <a class="btn btn-primary export"
-                     href="<?php echo getLinkAdmin('reports', 'export', ['id' => $report['id']]) ?>"><i
-                        class="fa fa-file-export"></i></a>
-               </td>
-            </tr>
-            <?php elseif(empty($statusSign)): 
-               $count++;
-               $isEmpty = false;   
-            ?>
-            <tr>
-               <td><?php echo $count ?></td>
-               <td>
-                  <a
-                     href="<?php echo getLinkAdmin('reports', "", ['user_id'=>$report['user_id']])?>"><?php echo $report['name_user']  ?></a>
-               </td>
-               <td><a
-                     href="<?php echo getLinkAdmin('reports', "", ['factory_id'=>$report['factory_id']])?>"><?php echo $report['name_factory']  ?></a>
-               </td>
-               <td><a
-                     href="<?php echo getLinkAdmin('reports', "", ['product_id'=>$report['product_id']])?>"><?php echo $report['name_product']  ?></a>
-               </td>
-               <td>
-                  <?php echo $report['po_code'];
-                  if($status == 1 && !empty($signText)) {
-                     echo '<span class="btn btn-success">Đã ký</span>';
-                  } else if (($status == 1 && empty($signText)) || ($status == 2 && empty($signText))) {
-                     echo '<a href="'.getLinkAdmin('users', 'sign').'" class="btn btn-warning">Tạo chữ ký</a>';
-                  } else {
-                     echo '<a class="btn btn-danger" href="'.getLinkAdmin('users', 'quick_sign', ["report_id" => $report['id'], "page" => $page]).'">Ký ngay</a>';
+                     echo '<a class="btn btn-danger" href="'.getLinkAdmin('users', 'quick_sign', ["report_id" => $report['id'], "page" => $page]);
                   }
                   ?>
                </td>
@@ -902,7 +813,7 @@ $msgType = getFlashData('msg_type');
                </td>
             </tr>
             <?php 
-               endif;endif; endforeach; 
+               endif; endforeach; 
                if($isEmpty):
             ?>
             <tr>

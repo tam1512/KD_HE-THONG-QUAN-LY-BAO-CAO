@@ -35,7 +35,6 @@ if(!empty($queryToken)) {
          $userXX = json_decode($noti['userXX'], true);
          $userQD = json_decode($noti['userQD'], true);
          $userPD = json_decode($noti['userPD'], true);
-         $userKT = json_decode($noti['userKT'], true);
 
          if(!empty($userXX['user_id']) && $id == $userXX['user_id']) {
             $listNotificationsByUser[] = [
@@ -57,14 +56,6 @@ if(!empty($queryToken)) {
             $listNotificationsByUser[] = [
                "code_report" => $codeReport,
                "seen" => $userPD['seen'],
-               "report_id" => $reportId
-            ];
-         }
-
-         if(!empty($userKT['user_id']) && $id == $userKT['user_id']) {
-            $listNotificationsByUser[] = [
-               "code_report" => $codeReport,
-               "seen" => $userKT['seen'],
                "report_id" => $reportId
             ];
          }
@@ -168,12 +159,12 @@ if(!empty($queryToken)) {
          <ul class="navbar-nav ml-auto">
             <!-- Notifications Dropdown Menu -->
             <li class="nav-item dropdown">
-               <a class="nav-link" data-toggle="dropdown" href="#" id="notification_click">
+               <a class="nav-link" data-toggle="dropdown" href="#">
                   <i class="far fa-bell"></i>
-                  <span class="badge badge-danger navbar-badge"
-                     id="count_notification"><?php echo !empty($listNotificationsByUser) ? count($listNotificationsByUser) : 0 ?></span>
+                  <span
+                     class="badge badge-danger navbar-badge"><?php echo !empty($listNotificationsByUser) ? count($listNotificationsByUser) : 0 ?></span>
                </a>
-               <div class="dropdown-menu dropdown-menu-lg dropdown-menu-right" id="notification">
+               <div class="dropdown-menu dropdown-menu-lg dropdown-menu-right">
                   <span class="dropdown-item dropdown-header">Bạn có
                      <?php echo !empty($listNotificationsByUser) ? count($listNotificationsByUser) : 0 ?> thông
                      báo</span>

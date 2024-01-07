@@ -902,7 +902,7 @@ $msgType = getFlashData('msg_type');
                </td>
             </tr>
             <?php 
-               endif;endif; endforeach; 
+               endif; endforeach; 
                if($isEmpty):
             ?>
             <tr>

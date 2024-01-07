@@ -167,13 +167,13 @@ if(!empty($queryToken)) {
          <!-- Right navbar links -->
          <ul class="navbar-nav ml-auto">
             <!-- Notifications Dropdown Menu -->
-            <li class="nav-item dropdown">
-               <a class="nav-link" data-toggle="dropdown" href="#" id="notification_click">
+            <li class="nav-item dropdown" id="notification">
+               <a class="nav-link" data-toggle="dropdown" href="#">
                   <i class="far fa-bell"></i>
-                  <span class="badge badge-danger navbar-badge"
-                     id="count_notification"><?php echo !empty($listNotificationsByUser) ? count($listNotificationsByUser) : 0 ?></span>
+                  <span
+                     class="badge badge-danger navbar-badge"><?php echo !empty($listNotificationsByUser) ? count($listNotificationsByUser) : 0 ?></span>
                </a>
-               <div class="dropdown-menu dropdown-menu-lg dropdown-menu-right" id="notification">
+               <div class="dropdown-menu dropdown-menu-lg dropdown-menu-right">
                   <span class="dropdown-item dropdown-header">Bạn có
                      <?php echo !empty($listNotificationsByUser) ? count($listNotificationsByUser) : 0 ?> thông
                      báo</span>

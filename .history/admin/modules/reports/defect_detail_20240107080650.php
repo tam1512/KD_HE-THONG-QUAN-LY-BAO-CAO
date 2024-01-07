@@ -13,7 +13,7 @@ $listAllReportDefects = getRaw("SELECT rd.id, df.name, df.level, df.skip, rd.def
 
 $report = firstRaw("SELECT rp.po_code, rp.code_report, rp.defect_finder, rp.quantity_deliver, rp.quantity_inspect, rp.comment, rp.suggest, rp.user_id, rp.create_at, rs.userXX, rs.userQD, rs.userPD, rs.userGC, rs.sign_text_GC, f.name AS factory_name, p.name AS product_name, rp.create_at FROM reports AS rp JOIN factories AS f ON f.id = rp.factory_id JOIN products AS p ON p.id = rp.product_id JOIN report_sign AS rs ON report_id = rp.id WHERE rp.id = $reportId");
 
-$sign_userKT = !empty(firstRaw("SELECT sign_text FROM sign WHERE user_id = ". $report["user_id"])['sign_text']) ? firstRaw("SELECT sign_text FROM sign WHERE user_id = ". $report["user_id"])['sign_text'] : false;
+$sign_userKT = firstRaw("SELECT sign_text FROM sign WHERE user_id = ". $report["user_id"])['sign_text'];
 $fullnameUserKT = firstRaw("SELECT fullname FROM users WHERE id = ". $report["user_id"])['fullname'];
 
 $userXX = json_decode($report["userXX"]);

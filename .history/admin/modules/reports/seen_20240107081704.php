@@ -33,29 +33,23 @@ if(isGet()) {
       if(!empty($userXX) && $userXX['user_id'] == $userId) {
          $userXX['seen'] = $seen;
 
-         $dataUpdateNoti = [
-            'userXX' => json_encode($userXX)
-         ];
+         $dataUpdateNoti = $userXX;
       }
 
       if(!empty($userQD) && $userQD['user_id'] == $userId) {
          $userQD['seen'] = $seen;
 
-         $dataUpdateNoti = [
-            'userQD' => json_encode($userQD)
-         ];
+         $dataUpdateNoti = $userQD;
       }
 
       if(!empty($userPD) && $userPD['user_id'] == $userId) {
          $userPD['seen'] = $seen;
 
-         $dataUpdateNoti = [
-            'userPD' => json_encode($userPD)
-         ];
+         $dataUpdateNoti = $userPD;
       }
 
       update('notifications', $dataUpdateNoti, "report_id=$reportId");
-      redirect("admin/?module=reports&action=seen&id=$reportId");
+
    }
 
    getMsg($msg, $msgType);

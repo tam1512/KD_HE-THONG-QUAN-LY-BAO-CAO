@@ -11,66 +11,14 @@ $isLogin = autoRemoveLoginToken();
 if(!$isLogin) {
    saveActivity();   
 }
-
+//  autoRemoveLoginToken();
 $token = getSession('login_token');
+
 $queryToken = firstRaw("SELECT user_id FROM login_token WHERE token = '$token'");
 if(!empty($queryToken)) {
    $id = $queryToken['user_id'];
    $queryUser = firstRaw("SELECT fullname FROM users WHERE id = '$id'");
    $fullname = $queryUser['fullname'];
-
-   $signText = firstRaw("SELECT sign_text FROM sign WHERE user_id = $id");
-   if(empty($signText)) {
-      setFlashData('msg', 'Chưa có chữ ký vui lòng tạo chữ ký');
-      setFlashData('msg_type', 'danger');
-   }
-
-
-   $listAllNotifications = getRaw("SELECT * FROM notifications");
-   $listNotificationsByUser = null;
-   if(!empty($listAllNotifications)) {
-      foreach($listAllNotifications as $noti) {
-         $reportId = $noti['report_id'];
-         $codeReport = firstRaw("SELECT code_report FROM reports WHERE id = $reportId")['code_report'];
-         $userXX = json_decode($noti['userXX'], true);
-         $userQD = json_decode($noti['userQD'], true);
-         $userPD = json_decode($noti['userPD'], true);
-         $userKT = json_decode($noti['userKT'], true);
-
-         if(!empty($userXX['user_id']) && $id == $userXX['user_id']) {
-            $listNotificationsByUser[] = [
-               "code_report" => $codeReport,
-               "seen" => $userXX['seen'],
-               "report_id" => $reportId
-            ];
-         }
-
-         if(!empty($userQD['user_id']) && $id == $userQD['user_id']) {
-            $listNotificationsByUser[] = [
-               "code_report" => $codeReport,
-               "seen" => $userQD['seen'],
-               "report_id" => $reportId
-            ];
-         }
-
-         if(!empty($userPD['user_id']) && $id == $userPD['user_id']) {
-            $listNotificationsByUser[] = [
-               "code_report" => $codeReport,
-               "seen" => $userPD['seen'],
-               "report_id" => $reportId
-            ];
-         }
-
-         if(!empty($userKT['user_id']) && $id == $userKT['user_id']) {
-            $listNotificationsByUser[] = [
-               "code_report" => $codeReport,
-               "seen" => $userKT['seen'],
-               "report_id" => $reportId
-            ];
-         }
-      }
-   }
-
 } else {
   setFlashData('msg', '');
   setFlashData('msg_type', '');
@@ -168,28 +116,21 @@ if(!empty($queryToken)) {
          <ul class="navbar-nav ml-auto">
             <!-- Notifications Dropdown Menu -->
             <li class="nav-item dropdown">
-               <a class="nav-link" data-toggle="dropdown" href="#" id="notification_click">
+               <a class="nav-link" data-toggle="dropdown" href="#">
                   <i class="far fa-bell"></i>
-                  <span class="badge badge-danger navbar-badge"
-                     id="count_notification"><?php echo !empty($listNotificationsByUser) ? count($listNotificationsByUser) : 0 ?></span>
+                  <span class="badge badge-danger navbar-badge">15</span>
                </a>
-               <div class="dropdown-menu dropdown-menu-lg dropdown-menu-right" id="notification">
-                  <span class="dropdown-item dropdown-header">Bạn có
-                     <?php echo !empty($listNotificationsByUser) ? count($listNotificationsByUser) : 0 ?> thông
-                     báo</span>
+               <div class="dropdown-menu dropdown-menu-lg dropdown-menu-right">
+                  <span class="dropdown-item dropdown-header">Bạn có 15 thông báo</span>
                   <div class="dropdown-divider"></div>
-                  <div class="notification-list">
-                     <?php 
-                        if(!empty($listNotificationsByUser)):
-                           foreach($listNotificationsByUser as $noti):
-                     ?>
-                     <a href="<?php echo getLinkAdmin('reports', 'seen', ['id' => $noti['report_id'], 'seen' => 1]) ?>"
-                        class="dropdown-item  <?php echo ($noti['seen'] == 1) ? '' : 'bg-light' ?>">
-                        <i class="nav-icon fas fa-file mr-2"></i> Số: <?php echo $noti['code_report'] ?>
-                        <?php echo ($noti['seen'] == 1) ? '<span class="float-right text-muted text-sm">Đã xem</span>' : false ?>
-                     </a>
-                     <?php endforeach; endif; ?>
-                  </div>
+                  <a href="#" class="dropdown-item bg-light">
+                     <i class="nav-icon fas fa-file mr-2"></i> Số: 002200/PX1/2023
+                  </a>
+                  <a href="#" class="dropdown-item bg-light">
+                     <i class="nav-icon fas fa-file mr-2"></i> Số: 002200/PX1/2023
+                  </a>
+                  <div class="dropdown-divider"></div>
+                  <a href="#" class="dropdown-item dropdown-footer">Xem thêm</a>
                </div>
             </li>
             <!-- Information user -->

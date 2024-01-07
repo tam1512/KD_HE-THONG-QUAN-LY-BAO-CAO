@@ -16,8 +16,6 @@ if(isGet()) {
 
          $deleteReportDefect = delete('report_defect', "report_id = $reportId");
          $deleteResultAQL = delete('resultaql', "report_id = $reportId");
-         $deleteReportSign = delete('report_sign', "report_id = $reportId");
-         $deleteNotification = delete('notifications', "report_id = $reportId");
          $deleteReport = delete('reports', "id = $reportId");
          if($deleteReport) {
             setFlashData('msg','Xóa thành công');

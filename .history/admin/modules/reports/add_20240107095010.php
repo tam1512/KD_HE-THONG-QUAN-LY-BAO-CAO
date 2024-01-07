@@ -171,7 +171,7 @@ $signText = firstRaw("SELECT sign_text FROM sign WHERE user_id = $userId");
             "userXX" => $userXXNoti,
             "userQD" => $userQDNoti,
             "userPD" => $userPDNoti,
-            "userKT" => $userKTNoti
+            "usetKT" => $userKTNoti
          ];
 
          $statusinsertNoti = insert('notifications', $dataInsertNoti);

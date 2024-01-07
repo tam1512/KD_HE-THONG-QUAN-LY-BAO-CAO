@@ -55,7 +55,7 @@ if(isGet()) {
       }
 
       update('notifications', $dataUpdateNoti, "report_id=$reportId");
-      redirect("admin/?module=reports&action=seen&id=$reportId");
+      
    }
 
    getMsg($msg, $msgType);

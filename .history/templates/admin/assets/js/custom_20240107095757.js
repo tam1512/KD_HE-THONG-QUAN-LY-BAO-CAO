@@ -691,31 +691,19 @@ function validateSignGC() {
 }
 
 function loadNotifications() {
-  $.ajax({
-    url: "http://localhost/KimDuc/radix/admin/?module=users&action=notifications",
-    method: "POST",
-    data: { list: true },
-    success: function (data) {
-      document.getElementById("notification").innerHTML = data;
-    },
-    error: function (error) {},
-  });
-}
-function loadCountNotifications() {
   setInterval(function () {
     $.ajax({
       url: "http://localhost/KimDuc/radix/admin/?module=users&action=notifications",
       method: "POST",
-      data: { count: true },
       success: function (data) {
-        document.getElementById("count_notification").innerHTML = data;
+        document.getElementById("notification").innerHTML = data;
       },
       error: function (error) {},
     });
   }, 1000);
 }
-loadCountNotifications();
-
-document.getElementById("notification_click").addEventListener("click", () => {
+let flag = true;
+$("#notification").click(function () {});
+if (flag) {
   loadNotifications();
-});
+}

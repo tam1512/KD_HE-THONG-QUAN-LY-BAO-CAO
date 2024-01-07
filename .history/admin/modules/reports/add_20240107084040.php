@@ -165,13 +165,11 @@ $signText = firstRaw("SELECT sign_text FROM sign WHERE user_id = $userId");
          $userXXNoti = '{"user_id":'.$userXXId.', "seen":2}';
          $userQDNoti = '{"user_id":'.$userQDId.', "seen":2}';
          $userPDNoti = '{"user_id":'.$userPDId.', "seen":2}';
-         $userKTNoti = '{"user_id":'.$userId.', "seen":2}';
          $dataInsertNoti = [
             'report_id' => $reportId,
             "userXX" => $userXXNoti,
             "userQD" => $userQDNoti,
             "userPD" => $userPDNoti,
-            "userKT" => $userKTNoti
          ];
 
          $statusinsertNoti = insert('notifications', $dataInsertNoti);
@@ -256,7 +254,7 @@ $signText = firstRaw("SELECT sign_text FROM sign WHERE user_id = $userId");
             if($insertResultAqlStatus) {
                removeSession("listAllReportDefectsAdd");
 
-               if(!empty($signText)) {
+               if(empty($signText)) {
                   setFlashData('msg', 'Thêm biên bản thành công.');
                   setFlashData('msg_type', 'success');
                   redirect('admin/?module=reports');
