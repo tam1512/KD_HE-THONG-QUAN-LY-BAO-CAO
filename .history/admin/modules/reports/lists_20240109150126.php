@@ -163,8 +163,9 @@ if(!$isSeenAll) {
          $userQD = json_decode($report['userQD'], true);
          $userPD = json_decode($report['userPD'], true);
          $statusKT = !empty(firstRaw("SELECT sign_text FROM sign WHERE user_id =".$report['user_id'])) ? 1 : 2;
-         $statusXX = $userXX['status'];
-         $statusQD = $userQD['status'];
+         $statusXX = 2;
+         $statusQD = 2;
+         $statusPD = 2;
 
          if(!empty($userXX["user_id"]) && $userXX["user_id"] == $user_id) {
             $status = $userXX["status"];
@@ -317,6 +318,10 @@ if(!$isSeenAll) {
    }
 }
 
+echo '<pre>';
+print_r($listReportOnPage);
+echo '</pre>';
+
 $countRowReports = count($listReportOnPage);
 
 // Số lượng trang muốn hiển thị trên 1 trang
@@ -342,7 +347,7 @@ $limitPagination = _LIMIT_PAGINATION;
  * page = 3 => offset = 6
  */
 $offset = ($page - 1) * $reportOnPage;
-
+echo $offset;
 //Xử lý query String
 $queryStr = null;
 if(!empty($_SERVER["QUERY_STRING"])) {
@@ -924,7 +929,7 @@ $msgType = getFlashData('msg_type');
             <?php 
                if(!empty($listReportOnPage)):
                   $count = 0;
-                  for($i = $offset; $i < ($offset + $reportOnPage); $i++):
+                  for($i = $offset; $i < ($offest + $reportOnPage); $i++):
                      $count++;
             ?>
             <tr>
@@ -1014,10 +1019,8 @@ $msgType = getFlashData('msg_type');
                <?php endif;?>
             </tr>
             <?php
-                  if($i == count($listReportOnPage) - 1) {
-                     break;
-                  }
-                  endfor;
+            echo $i;
+               endfor;
                else:
             ?>
             <tr>

@@ -163,8 +163,9 @@ if(!$isSeenAll) {
          $userQD = json_decode($report['userQD'], true);
          $userPD = json_decode($report['userPD'], true);
          $statusKT = !empty(firstRaw("SELECT sign_text FROM sign WHERE user_id =".$report['user_id'])) ? 1 : 2;
-         $statusXX = $userXX['status'];
-         $statusQD = $userQD['status'];
+         $statusXX = 2;
+         $statusQD = 2;
+         $statusPD = 2;
 
          if(!empty($userXX["user_id"]) && $userXX["user_id"] == $user_id) {
             $status = $userXX["status"];
@@ -924,7 +925,7 @@ $msgType = getFlashData('msg_type');
             <?php 
                if(!empty($listReportOnPage)):
                   $count = 0;
-                  for($i = $offset; $i < ($offset + $reportOnPage); $i++):
+                  for($i = $offset; $i < ($offest + $reportOnPage); $i++):
                      $count++;
             ?>
             <tr>
@@ -950,6 +951,16 @@ $msgType = getFlashData('msg_type');
                      } else {
                         echo '<a class="btn btn-danger" href="'.getLinkAdmin('users', 'quick_sign', ["report_id" => $listReportOnPage[$i]['id'], "page" => $page]).'">Ký ngay</a>';
                      }
+                  }
+
+                  if($status == 1 && !empty($signText)) {
+                     echo '<span class="btn btn-success">Đã ký</span>';
+                  } else if (($status == 1 && empty($signText)) || ($status == 2 && empty($signText))) {
+                     echo '<a href="'.getLinkAdmin('users', 'sign').'" class="btn btn-warning">Tạo chữ ký</a>';
+                  } else if($status == 2) {
+                     echo '<a class="btn btn-danger" href="'.getLinkAdmin('users', 'quick_sign', ["report_id" => $listReportOnPage[$i]['id'], "page" => $page]).'">Ký ngay</a>';
+                  } else {
+                     echo '';
                   }
                   ?>
                </td>
@@ -1014,10 +1025,7 @@ $msgType = getFlashData('msg_type');
                <?php endif;?>
             </tr>
             <?php
-                  if($i == count($listReportOnPage) - 1) {
-                     break;
-                  }
-                  endfor;
+               endforeach;
                else:
             ?>
             <tr>

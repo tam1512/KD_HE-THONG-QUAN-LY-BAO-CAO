@@ -287,7 +287,7 @@ if($isAll) {
          "plugins": {
             "title": {
                "display": true,
-               "text": "Biểu đồ tỷ lệ lỗi chất lượng may đầu của cơ sở '.$nameFactory.' '.$time.'"
+               "text": "Biểu đồ tỷ lệ lỗi chất lượng may đầu vào '.$time.'"
              }
          },
         "scales": {

@@ -163,8 +163,9 @@ if(!$isSeenAll) {
          $userQD = json_decode($report['userQD'], true);
          $userPD = json_decode($report['userPD'], true);
          $statusKT = !empty(firstRaw("SELECT sign_text FROM sign WHERE user_id =".$report['user_id'])) ? 1 : 2;
-         $statusXX = $userXX['status'];
-         $statusQD = $userQD['status'];
+         $statusXX = 2;
+         $statusQD = 2;
+         $statusPD = 2;
 
          if(!empty($userXX["user_id"]) && $userXX["user_id"] == $user_id) {
             $status = $userXX["status"];

@@ -12,10 +12,9 @@ if(isPost()) {
    $dataTable = "";
    $isAll = false;
    $isAlone = false;
-   $time = "";
+
    $filter = '';
    $sql = "";
-   $nameFactory = "";
    if(!empty($year)) {
       if( !empty($filter) && strpos($filter, "WHERE") >= 0) {
          $operator = 'AND';
@@ -24,7 +23,6 @@ if(isPost()) {
       }
       
       $filter .= "$operator YEAR(rp.create_at) = $year";
-      $time = "năm $year";
    }
 
    if(!empty($month)) {
@@ -35,7 +33,6 @@ if(isPost()) {
       }
 
       $filter .= " $operator CONCAT(MONTH(rp.create_at), '/', YEAR(rp.create_at)) = '$month/$year'";
-      $time = "tháng $month/$year";
    }
 
    if(!empty($object)) {
@@ -53,9 +50,8 @@ if(isPost()) {
          JOIN defects AS df ON df.id = rd.defect_id
          JOIN factories AS f ON rp.factory_id = f.id
          $filter
-         GROUP BY df.cate_id
+         GROUP BY df.name
          ORDER BY total_defect DESC;";
-         $nameFactory = firstRaw("SELECT name FROM factories WHERE id = $object")['name'];
       } else {
          $isAll = true;
          $sql = "SELECT f.id, f.name, SUM(quantity_deliver) AS total_deliver, SUM(quantity_inspect) AS total_inspect, SUM(ra.total_defect) AS total_defect 
@@ -83,7 +79,7 @@ if($isAll) {
                $fac['total_deliver'] = $item['total_deliver'];
                $fac['total_inspect'] = $item['total_inspect'];
                $fac['total_defect'] = $item['total_defect'];
-               $fac['percent'] = round($item['total_defect'] / $item['total_inspect'] * 100, 2);
+               $fac['percent'] = $item['total_defect'] / $item['total_inspect'] * 100;
                $listAllFactories[$key] = $fac;
                break;
             } else {
@@ -112,7 +108,7 @@ if($isAll) {
          <th>Số lượng giao</th>
          <th>Số lượng kiểm</th>
          <th>Tổng lỗi</th>
-         <th>Tỷ lệ lỗi (%)</th>
+         <th>Tỷ lệ lỗi</th>
       </tr>
    ';
 
@@ -146,8 +142,7 @@ if($isAll) {
           "backgroundColor": ["rgba(255, 26, 104, 0.2)"],
           "borderColor": ["rgba(255, 26, 104, 1)"],
           "borderWidth": 1,
-          "type": "bar",
-          "tension": 0.4
+          "type": "bar"
         },
         {
           "label": "Tổng số lỗi",
@@ -155,8 +150,7 @@ if($isAll) {
           "backgroundColor": ["rgba(25, 26, 104, 0.2)"],
           "borderColor": ["rgba(25, 26, 104, 1)"],
           "borderWidth": 1,
-          "type": "bar",
-          "tension": 0.4
+          "type": "bar"
         },
         {
           "label": "Phần trăm lỗi",
@@ -164,7 +158,6 @@ if($isAll) {
           "backgroundColor": ["rgba(255, 0, 0, 0.2)"],
           "borderColor": ["rgba(255, 0, 0, 1)"],
           "borderWidth": 1,
-          "tension": 0.4,
           "yAxisID": "percentage"
         }
       ]
@@ -176,12 +169,6 @@ if($isAll) {
       "type": "line",
       "data": '.$dataRender.',
       "options": {
-         "plugins": {
-            "title": {
-               "display": true,
-               "text": "Biểu đồ tỷ lệ lỗi chất lượng may đầu vào '.$time.'"
-             }
-         },
         "scales": {
           "y": {
             "beginAtZero": true,
@@ -196,9 +183,6 @@ if($isAll) {
             "title": {
               "display": true,
               "text": "Phần trăm lỗi (%)"
-            },
-            "grid": {
-               "drawOnChartArea": false
             }
           }
         }
@@ -217,7 +201,7 @@ if($isAll) {
          <th width="10%">STT</th>
          <th width="20%">Tên lỗi</th>
          <th>Tổng số lượng lỗi</th>
-         <th>Phần trăm tích lũy (%)</th>
+         <th>Phần trăm tích lũy</th>
       </tr>
    ';
 
@@ -234,7 +218,7 @@ if($isAll) {
       $percent = ($prevTotal + $item['total_defect']) / $total * 100;
       $prevTotal += $item['total_defect'];
 
-      $dataChart[$key]['percent'] = round($percent, 2);
+      $dataChart[$key]['percent'] = $percent;
    }
 
    foreach($dataChart as $item) {
@@ -260,11 +244,10 @@ if($isAll) {
         {
           "label": "Tổng số lượng kiểm",
           "data": ['.trim(trim($dataTotalDefect),',').'],
-          "backgroundColor": ["rgba(25, 26, 104, 0.2)"],
-          "borderColor": ["rgba(25, 26, 104, 1)"],
+          "backgroundColor": ["rgba(255, 26, 104, 0.2)"],
+          "borderColor": ["rgba(255, 26, 104, 1)"],
           "borderWidth": 1,
-          "type": "bar",
-          "tension": 0.4
+          "type": "bar"
         },
         {
           "label": "Phần trăm tích lũy",
@@ -272,7 +255,6 @@ if($isAll) {
           "backgroundColor": ["rgba(255, 0, 0, 0.2)"],
           "borderColor": ["rgba(255, 0, 0, 1)"],
           "borderWidth": 1,
-          "tension": 0.4,
           "yAxisID": "percentage"
         }
       ]
@@ -284,29 +266,12 @@ if($isAll) {
       "type": "line",
       "data": '.$dataRender.',
       "options": {
-         "plugins": {
-            "title": {
-               "display": true,
-               "text": "Biểu đồ tỷ lệ lỗi chất lượng may đầu của cơ sở '.$nameFactory.' '.$time.'"
-             }
-         },
         "scales": {
           "y": {
             "beginAtZero": true,
             "title": {
               "display": true,
               "text": "Số lượng lỗi"
-            }
-          },
-          "percentage": {
-            "beginAtZero": true,
-            "position": "right",
-            "title": {
-              "display": true,
-              "text": "Phần trăm tích lũy (%)"
-            },
-            "grid": {
-               "drawOnChartArea": false
             }
           }
         }

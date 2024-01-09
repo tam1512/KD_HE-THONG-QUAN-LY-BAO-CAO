@@ -16,7 +16,7 @@ if(isPost()) {
    $filter = '';
    $sql = "";
    $nameFactory = "";
-   if(!empty($year)) {
+      if(!empty($year)) {
       if( !empty($filter) && strpos($filter, "WHERE") >= 0) {
          $operator = 'AND';
       } else {
@@ -55,7 +55,6 @@ if(isPost()) {
          $filter
          GROUP BY df.cate_id
          ORDER BY total_defect DESC;";
-         $nameFactory = firstRaw("SELECT name FROM factories WHERE id = $object")['name'];
       } else {
          $isAll = true;
          $sql = "SELECT f.id, f.name, SUM(quantity_deliver) AS total_deliver, SUM(quantity_inspect) AS total_inspect, SUM(ra.total_defect) AS total_defect 
@@ -287,7 +286,7 @@ if($isAll) {
          "plugins": {
             "title": {
                "display": true,
-               "text": "Biểu đồ tỷ lệ lỗi chất lượng may đầu của cơ sở '.$nameFactory.' '.$time.'"
+               "text": "Biểu đồ tỷ lệ lỗi chất lượng may đầu vào '.$time.'"
              }
          },
         "scales": {

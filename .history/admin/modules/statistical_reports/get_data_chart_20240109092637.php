@@ -15,7 +15,6 @@ if(isPost()) {
    $time = "";
    $filter = '';
    $sql = "";
-   $nameFactory = "";
    if(!empty($year)) {
       if( !empty($filter) && strpos($filter, "WHERE") >= 0) {
          $operator = 'AND';
@@ -24,7 +23,7 @@ if(isPost()) {
       }
       
       $filter .= "$operator YEAR(rp.create_at) = $year";
-      $time = "năm $year";
+      $time = $year;
    }
 
    if(!empty($month)) {
@@ -35,7 +34,7 @@ if(isPost()) {
       }
 
       $filter .= " $operator CONCAT(MONTH(rp.create_at), '/', YEAR(rp.create_at)) = '$month/$year'";
-      $time = "tháng $month/$year";
+      $time = "$month/$year";
    }
 
    if(!empty($object)) {
@@ -55,7 +54,6 @@ if(isPost()) {
          $filter
          GROUP BY df.cate_id
          ORDER BY total_defect DESC;";
-         $nameFactory = firstRaw("SELECT name FROM factories WHERE id = $object")['name'];
       } else {
          $isAll = true;
          $sql = "SELECT f.id, f.name, SUM(quantity_deliver) AS total_deliver, SUM(quantity_inspect) AS total_inspect, SUM(ra.total_defect) AS total_defect 
@@ -179,7 +177,7 @@ if($isAll) {
          "plugins": {
             "title": {
                "display": true,
-               "text": "Biểu đồ tỷ lệ lỗi chất lượng may đầu vào '.$time.'"
+               "text": "Biểu đồ tỷ lệ lỗi chất lượng may đầu vào theo '.$time.'"
              }
          },
         "scales": {
@@ -284,12 +282,6 @@ if($isAll) {
       "type": "line",
       "data": '.$dataRender.',
       "options": {
-         "plugins": {
-            "title": {
-               "display": true,
-               "text": "Biểu đồ tỷ lệ lỗi chất lượng may đầu của cơ sở '.$nameFactory.' '.$time.'"
-             }
-         },
         "scales": {
           "y": {
             "beginAtZero": true,

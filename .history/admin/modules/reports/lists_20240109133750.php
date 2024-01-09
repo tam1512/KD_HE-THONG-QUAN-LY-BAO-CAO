@@ -139,185 +139,21 @@ if(isGet()) {
 $countRowReports = 0;
 
 // Số lượng trang
-$listAllReports = getRaw("SELECT rp.id, rp.cate_id, rp.user_id, rp.factory_id, rp.product_id, rp.status, rp_c.name AS name_cate, rs.userXX, rs.userQD, rs.userPD, u.fullname AS name_user, f.name AS name_factory, p.name AS name_product, po_code, conclusion, code_report, rp.create_at FROM reports AS rp JOIN report_categories AS rp_c ON rp.cate_id = rp_c.id JOIN users AS u ON rp.user_id = u.id JOIN factories AS f ON rp.factory_id = f.id JOIN products AS p ON rp.product_id = p.id JOIN resultaql AS ra ON rp.id = ra.report_id JOIN report_sign AS rs ON rs.report_id = rp.id $filter ORDER BY rp.create_at DESC");
-
-// echo '<pre>';
-// print_r($listAllReports);
-// echo '</pre>';
-
-$listReportOnPage = [];
+$listAllReports = getRaw("SELECT rp.id, rp.cate_id, rp.user_id, rp.factory_id, rp.product_id, rp.status, rp_c.name AS name_cate, rs.userXX, rs.userQD, rs.userPD, u.fullname AS name_user, f.name AS name_factory, p.name AS name_product, po_code, conclusion, code_report, rp.create_at FROM reports AS rp JOIN report_categories AS rp_c ON rp.cate_id = rp_c.id JOIN users AS u ON rp.user_id = u.id JOIN factories AS f ON rp.factory_id = f.id JOIN products AS p ON rp.product_id = p.id JOIN resultaql AS ra ON rp.id = ra.report_id JOIN report_sign AS rs ON rs.report_id = rp.id ORDER BY rp.create_at DESC LIMIT");
+$listReportSeenAlone = [];
 if(!$isSeenAll) {
    foreach($listAllReports as $report) {
-      if($user_id == $report['user_id']) {
-         if(!empty($signText)) {
-            $report["status_text"] = '<span class="btn btn-success">Đã ký</span>';
-            if(empty($statusSign) || $statusSign == 1) {
-               $listReportOnPage[] = $report;
-            }
-         } else {
-            $report["status_text"] = '<a href="'.getLinkAdmin('users', 'sign').'" class="btn btn-warning">Tạo chữ ký</a>';
-            $listReportOnPage[] = $report;
-         }
-      } else {
-         $userXX = json_decode($report['userXX'], true);
-         $userQD = json_decode($report['userQD'], true);
-         $userPD = json_decode($report['userPD'], true);
-         $statusKT = !empty(firstRaw("SELECT sign_text FROM sign WHERE user_id =".$report['user_id'])) ? 1 : 2;
-         $statusXX = $userXX['status'];
-         $statusQD = $userQD['status'];
 
-         if(!empty($userXX["user_id"]) && $userXX["user_id"] == $user_id) {
-            $status = $userXX["status"];
-            if($statusKT == 1) {
-               if($status == 1 && !empty($signText)) {
-                  $report["status_text"] ='<span class="btn btn-success">Đã ký</span>';
-                  $statusXX = 1;
-                  if(empty($statusSign) || $statusSign == 1) {
-                     $listReportOnPage[] = $report;
-                  }
-               } else if(($status == 1 && empty($signText)) || ($status == 2 && empty($signText))) {
-                  $report["status_text"] = '<a href="'.getLinkAdmin('users', 'sign').'" class="btn btn-warning">Tạo chữ ký</a>';
-                  $listReportOnPage[] = $report;
-               } else if($status == 2 && !empty($signText)) {
-                  $report["status_text"] = ["status" => "Ký ngay"];
-                  if(empty($statusSign) || $statusSign == 2) {
-                     $listReportOnPage[] = $report;
-                  }
-               }
-            }
-         }
 
-         if(!empty($userQD["user_id"]) && $userQD["user_id"] == $user_id) {
-            $status = $userQD["status"];
-            if($statusKT == 1) {
-               if($status == 1 && !empty($signText)) {
-                  $report["status_text"] ='<span class="btn btn-success">Đã ký</span>';
-                  $statusQD = 1;
-                  if(empty($statusSign) || $statusSign == 1) {
-                     $listReportOnPage[] = $report;
-                  }
-               } else if(($status == 1 && empty($signText)) || ($status == 2 && empty($signText))) {
-                  $report["status_text"] = '<a href="'.getLinkAdmin('users', 'sign').'" class="btn btn-warning">Tạo chữ ký</a>';
-                  $listReportOnPage[] = $report;
-               } else if($status == 2 && !empty($signText)) {
-                  $report["status_text"] = ["status" => "Ký ngay"];
-                  if(empty($statusSign) || $statusSign == 2) {
-                     $listReportOnPage[] = $report;
-                  }
-               }
-            }
-         }
+      $userXX = json_decode($report['userXX'], true);
+      $userQD = json_decode($report['userQD'], true);
+      $userPD = json_decode($report['userPD'], true);
 
-         if(!empty($userPD["user_id"]) && $userPD["user_id"] == $user_id) {
-            $status = $userPD["status"];
-            if($statusXX == 1 || $statusQD == 1) {
-               if($status == 1 && !empty($signText)) {
-                  $report["status_text"] ='<span class="btn btn-success">Đã ký</span>';
-                  if(empty($statusSign) || $statusSign == 1) {
-                     $listReportOnPage[] = $report;
-                  }
-               } else if(($status == 1 && empty($signText)) || ($status == 2 && empty($signText))) {
-                  $report["status_text"] = '<a href="'.getLinkAdmin('users', 'sign').'" class="btn btn-warning">Tạo chữ ký</a>';
-                  $listReportOnPage[] = $report;
-               } else if($status == 2 && !empty($signText)) {
-                  $report["status_text"] = ["status" => "Ký ngay"];
-                  if(empty($statusSign) || $statusSign == 2) {
-                     $listReportOnPage[] = $report;
-                  }
-               }
-            }
-         }
-      }
-   }
-} else {
-   foreach($listAllReports as $report) {
-      if($user_id == $report['user_id']) {
-         if(!empty($signText)) {
-            $report["status_text"] = '<span class="btn btn-success">Đã ký</span>';
-            if(!empty($statusSign) && $statusSign == 1) {
-               $listReportOnPage[] = $report;
-            }
-         } else {
-            $report["status_text"] = '<a href="'.getLinkAdmin('users', 'sign').'" class="btn btn-warning">Tạo chữ ký</a>';
-         }
-         if(empty($statusSign)) {
-            $listReportOnPage[] = $report;
-         }
-      } else {
-         $userXX = json_decode($report['userXX'], true);
-         $userQD = json_decode($report['userQD'], true);
-         $userPD = json_decode($report['userPD'], true);
-         $statusKT = !empty(firstRaw("SELECT sign_text FROM sign WHERE user_id =".$report['user_id'])) ? 1 : 2;
-         $statusXX = 2;
-         $statusQD = 2;
-         $statusPD = 2;
 
-         if(!empty($userXX["user_id"]) && $userXX["user_id"] == $user_id) {
-            $status = $userXX["status"];
-            if($statusKT == 1) {
-               if($status == 1 && !empty($signText)) {
-                  $report["status_text"] ='<span class="btn btn-success">Đã ký</span>';
-                  if(!empty($statusSign) && $statusSign == 1) {
-                     $listReportOnPage[] = $report;
-                  }
-                  $statusXX = 1;
-               } else if(($status == 1 && empty($signText)) || ($status == 2 && empty($signText))) {
-                  $report["status_text"] = '<a href="'.getLinkAdmin('users', 'sign').'" class="btn btn-warning">Tạo chữ ký</a>';
-               } else if($status == 2 && !empty($signText)) {
-                  $report["status_text"] = ["status" => "Ký ngay"];
-                  if(!empty($statusSign) && $statusSign == 2) {
-                     $listReportOnPage[] = $report;
-                  }
-               }
-            }
-         }
-
-         if(!empty($userQD["user_id"]) && $userQD["user_id"] == $user_id) {
-            $status = $userQD["status"];
-            if($statusKT == 1) {
-               if($status == 1 && !empty($signText)) {
-                  $report["status_text"] ='<span class="btn btn-success">Đã ký</span>';
-                  $statusQD = 1;
-                  if(!empty($statusSign) && $statusSign == 1) {
-                     $listReportOnPage[] = $report;
-                  }
-               } else if(($status == 1 && empty($signText)) || ($status == 2 && empty($signText))) {
-                  $report["status_text"] = '<a href="'.getLinkAdmin('users', 'sign').'" class="btn btn-warning">Tạo chữ ký</a>';
-               } else if($status == 2 && !empty($signText)) {
-                  $report["status_text"] = ["status" => "Ký ngay"];
-                  if(!empty($statusSign) && $statusSign == 2) {
-                     $listReportOnPage[] = $report;
-                  }
-               }
-            }
-         }
-
-         if(!empty($userPD["user_id"]) && $userPD["user_id"] == $user_id) {
-            $status = $userPD["status"];
-            if($statusXX == 1 || $statusQD == 1) {
-               if($status == 1 && !empty($signText)) {
-                  $report["status_text"] ='<span class="btn btn-success">Đã ký</span>';
-                  if(!empty($statusSign) && $statusSign == 1) {
-                     $listReportOnPage[] = $report;
-                  }
-               } else if(($status == 1 && empty($signText)) || ($status == 2 && empty($signText))) {
-                  $report["status_text"] = '<a href="'.getLinkAdmin('users', 'sign').'" class="btn btn-warning">Tạo chữ ký</a>';
-               } else if($status == 2 && !empty($signText)) {
-                  $report["status_text"] = ["status" => "Ký ngay"];
-                  if(!empty($statusSign) && $statusSign == 2) {
-                     $listReportOnPage[] = $report;
-                  }
-               }
-            }
-         }
-         if(empty($statusSign)) {
-            $listReportOnPage[] = $report;
-         }
-      }
    }
 }
 
-$countRowReports = count($listReportOnPage);
+$countRowReports = getRows("SELECT rp.id, rp.cate_id, rp.user_id, rp.factory_id, rp.product_id, rp_c.name AS name_cate, u.fullname AS name_user, f.name AS name_factory, p.name AS name_product, po_code, conclusion, code_report, rp.create_at FROM reports AS rp JOIN report_categories AS rp_c ON rp.cate_id = rp_c.id JOIN users AS u ON rp.user_id = u.id JOIN factories AS f ON rp.factory_id = f.id JOIN products AS p ON rp.product_id = p.id JOIN resultaql AS ra ON rp.id = ra.report_id $filter");
 
 // Số lượng trang muốn hiển thị trên 1 trang
 $reportOnPage = _PAGE_ON_PAGE;
@@ -342,6 +178,8 @@ $limitPagination = _LIMIT_PAGINATION;
  * page = 3 => offset = 6
  */
 $offset = ($page - 1) * $reportOnPage;
+
+$listReportOnPage = getRaw("SELECT rp.id, rp.cate_id, rp.user_id, rp.factory_id, rp.product_id, rp.status, rp_c.name AS name_cate, rs.userXX, rs.userQD, rs.userPD, u.fullname AS name_user, f.name AS name_factory, p.name AS name_product, po_code, conclusion, code_report, rp.create_at FROM reports AS rp JOIN report_categories AS rp_c ON rp.cate_id = rp_c.id JOIN users AS u ON rp.user_id = u.id JOIN factories AS f ON rp.factory_id = f.id JOIN products AS p ON rp.product_id = p.id JOIN resultaql AS ra ON rp.id = ra.report_id JOIN report_sign AS rs ON rs.report_id = rp.id $filter ORDER BY rp.create_at DESC LIMIT $offset, $reportOnPage");
 
 //Xử lý query String
 $queryStr = null;
@@ -924,58 +762,88 @@ $msgType = getFlashData('msg_type');
             <?php 
                if(!empty($listReportOnPage)):
                   $count = 0;
-                  for($i = $offset; $i < ($offset + $reportOnPage); $i++):
-                     $count++;
+                  $isEmpty = true;
+                  foreach($listReportOnPage as $report):
+                     $status = null;
+                     if($report['user_id'] == $user_id) {
+                        $status = 1;
+                     } else {
+                        $userXX = json_decode($report['userXX'], true);
+                        $userQD = json_decode($report['userQD'], true);
+                        $userPD = json_decode($report['userPD'], true);
+
+                        if(!empty($userXX["user_id"]) && $userXX["user_id"] == $user_id) {
+                           $status = $userXX["status"];
+                        }
+
+                        if(!empty($userQD["user_id"]) && $userQD["user_id"] == $user_id) {
+                           $status = $userQD["status"];
+                        }
+
+                        if(!empty($userPD["user_id"]) && $userPD["user_id"] == $user_id) {
+                           $status = $userPD["status"];
+                        }
+                     }
+
+                     if($status == null) {
+                        if($isSeenAll) {
+                           $status = 3;
+                        }
+                     }
+
+                     if($status != null):
+                        if(!empty($statusSign) && $statusSign == $status):
+                           $count++;
+                           $isEmpty = false;
             ?>
             <tr>
                <td><?php echo $count ?></td>
                <td>
                   <a
-                     href="<?php echo getLinkAdmin('reports', "", ['user_id'=>$listReportOnPage[$i]['user_id']])?>"><?php echo $listReportOnPage[$i]['name_user']  ?></a>
+                     href="<?php echo getLinkAdmin('reports', "", ['user_id'=>$report['user_id']])?>"><?php echo $report['name_user']  ?></a>
                </td>
                <td><a
-                     href="<?php echo getLinkAdmin('reports', "", ['factory_id'=>$listReportOnPage[$i]['factory_id']])?>"><?php echo $listReportOnPage[$i]['name_factory']  ?></a>
+                     href="<?php echo getLinkAdmin('reports', "", ['factory_id'=>$report['factory_id']])?>"><?php echo $report['name_factory']  ?></a>
                </td>
                <td><a
-                     href="<?php echo getLinkAdmin('reports', "", ['product_id'=>$listReportOnPage[$i]['product_id']])?>"><?php echo $listReportOnPage[$i]['name_product']  ?></a>
+                     href="<?php echo getLinkAdmin('reports', "", ['product_id'=>$report['product_id']])?>"><?php echo $report['name_product']  ?></a>
                </td>
                <td>
-                  <?php echo $listReportOnPage[$i]['po_code'];
-
-                  if(empty($listReportOnPage[$i]['status_text'])) {
-                     echo '';
+                  <?php echo $report['po_code'];
+                  echo $status;
+                  if($status == 1 && !empty($signText)) {
+                     echo '<span class="btn btn-success">Đã ký</span>';
+                  } else if (($status == 1 && empty($signText)) || ($status == 2 && empty($signText))) {
+                     echo '<a href="'.getLinkAdmin('users', 'sign').'" class="btn btn-warning">Tạo chữ ký</a>';
+                  } else if($status == 2) {
+                     echo '<a class="btn btn-danger" href="'.getLinkAdmin('users', 'quick_sign', ["report_id" => $report['id'], "page" => $page]).'">Ký ngay</a>';
                   } else {
-                     if(empty($listReportOnPage[$i]['status_text']['status'])) {
-                        echo $listReportOnPage[$i]['status_text'];
-                     } else {
-                        echo '<a class="btn btn-danger" href="'.getLinkAdmin('users', 'quick_sign', ["report_id" => $listReportOnPage[$i]['id'], "page" => $page]).'">Ký ngay</a>';
-                     }
+                     echo '';
                   }
                   ?>
                </td>
-               <td><a
-                     href="<?php echo getLinkAdmin('reports', "", ['conclusion'=>$listReportOnPage[$i]['conclusion']])?>">
+               <td><a href="<?php echo getLinkAdmin('reports', "", ['conclusion'=>$report['conclusion']])?>">
                      <?php
-                        if($listReportOnPage[$i]['conclusion']  == 1 ) {
+                        if($report['conclusion']  == 1 ) {
                            echo 'Chưa đạt';
                         } 
-                        if($listReportOnPage[$i]['conclusion']  == 2 ) {
+                        if($report['conclusion']  == 2 ) {
                            echo 'Đạt';
                         } 
-                        if($listReportOnPage[$i]['conclusion']  == 3 ) {
+                        if($report['conclusion']  == 3 ) {
                            echo 'Chờ xử lý';
                         } 
                         
                      ?>
                   </a>
                </td>
-               <td><?php echo getDateFormat($listReportOnPage[$i]["create_at"], 'd/m/Y H:i:s') ?></td>
+               <td><?php echo getDateFormat($report["create_at"], 'd/m/Y H:i:s') ?></td>
                <td>
                   <?php 
                      $valueStatus = null;
                      $colorStatus = null;
                      foreach($statusReportArr as $key => $value) {
-                        if($key == $listReportOnPage[$i]['status']) {
+                        if($key == $report['status']) {
                            $valueStatus = $value['value'];
                            $colorStatus = $value['color'];
                         }
@@ -986,38 +854,119 @@ $msgType = getFlashData('msg_type');
                <?php if($isSeen): ?>
                <td class="text-center">
                   <a class="btn btn-success"
-                     href="<?php echo getLinkAdmin('reports', 'seen', ['id' => $listReportOnPage[$i]['id']]) ?>">
+                     href="<?php echo getLinkAdmin('reports', 'seen', ['id' => $report['id']]) ?>">
                      <i class="far fa-eye"></i>
                   </a>
                </td>
                <?php endif; if($isEdit): ?>
                <td class="text-center">
                   <a class="btn btn-warning"
-                     href="<?php echo getLinkAdmin('reports', 'edit', ['id' => $listReportOnPage[$i]['id']]) ?>">
+                     href="<?php echo getLinkAdmin('reports', 'edit', ['id' => $report['id']]) ?>">
                      <i class="far fa-edit"></i>
                   </a>
                </td>
                <?php endif; if($isDelete): ?>
                <td class="text-center">
                   <a class="btn btn-danger" onclick="return confirm('Bạn có chắc chắn muốn xóa?')"
-                     href="<?php echo getLinkAdmin('reports', 'delete', ['id' => $listReportOnPage[$i]['id']]) ?>">
+                     href="<?php echo getLinkAdmin('reports', 'delete', ['id' => $report['id']]) ?>">
                      <i class="fa fa-trash"></i>
                   </a>
                </td>
                <?php endif; if($isExport): ?>
                <td class="text-center">
                   <a class="btn btn-primary export"
-                     href="<?php echo getLinkAdmin('reports', 'export', ['id' => $listReportOnPage[$i]['id']]) ?>">
+                     href="<?php echo getLinkAdmin('reports', 'export', ['id' => $report['id']]) ?>">
                      <i class="fa fa-file-export"></i>
                   </a>
                </td>
                <?php endif;?>
             </tr>
-            <?php
-                  if($i == count($listReportOnPage) - 1) {
-                     break;
+            <?php elseif(empty($statusSign)): 
+               $count++;
+               $isEmpty = false;   
+            ?>
+            <tr>
+               <td><?php echo $count ?></td>
+               <td>
+                  <a
+                     href="<?php echo getLinkAdmin('reports', "", ['user_id'=>$report['user_id']])?>"><?php echo $report['name_user']  ?></a>
+               </td>
+               <td><a
+                     href="<?php echo getLinkAdmin('reports', "", ['factory_id'=>$report['factory_id']])?>"><?php echo $report['name_factory']  ?></a>
+               </td>
+               <td><a
+                     href="<?php echo getLinkAdmin('reports', "", ['product_id'=>$report['product_id']])?>"><?php echo $report['name_product']  ?></a>
+               </td>
+               <td>
+                  <?php echo $report['po_code'];
+                  if($status == 1 && !empty($signText)) {
+                     echo '<span class="btn btn-success">Đã ký</span>';
+                  } else if (($status == 1 && empty($signText)) || ($status == 2 && empty($signText))) {
+                     echo '<a href="'.getLinkAdmin('users', 'sign').'" class="btn btn-warning">Tạo chữ ký</a>';
+                  } else if($status == 2) {
+                     echo '<a class="btn btn-danger" href="'.getLinkAdmin('users', 'quick_sign', ["report_id" => $report['id'], "page" => $page]).'">Ký ngay</a>';
+                  } else {
+                     echo '';
                   }
-                  endfor;
+                  ?>
+               </td>
+               <td><a href="<?php echo getLinkAdmin('reports', "", ['conclusion'=>$report['conclusion']])?>">
+                     <?php
+                        if($report['conclusion']  == 1 ) {
+                           echo 'Chưa đạt';
+                        } 
+                        if($report['conclusion']  == 2 ) {
+                           echo 'Đạt';
+                        } 
+                        if($report['conclusion']  == 3 ) {
+                           echo 'Chờ xử lý';
+                        } 
+                        
+                     ?>
+                  </a>
+               </td>
+               <td><?php echo getDateFormat($report["create_at"], 'd/m/Y H:i:s') ?></td>
+               <td>
+                  <?php 
+                     $valueStatus = null;
+                     $colorStatus = null;
+                     foreach($statusReportArr as $key => $value) {
+                        if($key == $report['status']) {
+                           $valueStatus = $value['value'];
+                           $colorStatus = $value['color'];
+                        }
+                     }
+                  ?>
+                  <lable class="btn btn-<?php echo $colorStatus?>"><?php echo $valueStatus ?></lable>
+               </td>
+               <td class="text-center"><a class="btn btn-success"
+                     href="<?php echo getLinkAdmin('reports', 'seen', ['id' => $report['id']]) ?>"><i
+                        class="far fa-eye"></i></a></td>
+               <td class="text-center">
+                  <a class="btn btn-warning"
+                     href="<?php echo getLinkAdmin('reports', 'edit', ['id' => $report['id']]) ?>"><i
+                        class="far fa-edit"></i></a>
+               </td>
+               <td class="text-center">
+                  <a class="btn btn-danger" onclick="return confirm('Bạn có chắc chắn muốn xóa?')"
+                     href="<?php echo getLinkAdmin('reports', 'delete', ['id' => $report['id']]) ?>"><i
+                        class="fa fa-trash"></i></a>
+               </td>
+               <td class="text-center">
+                  <a class="btn btn-primary export"
+                     href="<?php echo getLinkAdmin('reports', 'export', ['id' => $report['id']]) ?>"><i
+                        class="fa fa-file-export"></i></a>
+               </td>
+            </tr>
+            <?php 
+               endif;endif; endforeach; 
+               if($isEmpty):
+            ?>
+            <tr>
+               <td colspan="12" class="text-center alert alert-danger">Không có biên bản</td>
+            </tr>
+            <?php
+               endif;
                else:
             ?>
             <tr>
