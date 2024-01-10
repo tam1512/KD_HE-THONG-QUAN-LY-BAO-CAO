@@ -104,12 +104,7 @@ let unit = document.querySelector("#unit");
 let heavy = document.querySelector("#heavy");
 let light = document.querySelector("#light");
 
-if (
-  levelDefectElement !== null &&
-  unit != null &&
-  heavy != null &&
-  light != null
-) {
+if (levelDefectElement !== null) {
   levelDefectElement.addEventListener("change", (e) => {
     if (e.target.value == "Có điều kiện") {
       unit.removeAttribute("disabled");
@@ -124,31 +119,28 @@ if (
 }
 
 //Xử lý hiển thị mức độ lỗi theo lỗi
-let defectElement = document.getElementById("defect");
-let levelElement = document.getElementById("level");
-let idDefectOrder = document.getElementById("idDefectOrder");
+let defectElement = document.getElementById("#defect");
+let levelElement = document.getElementById("#level");
+let idDefectOrder = document.getElementById("idDefectOrder").value;
 
 if (defectElement != null && levelElement != null) {
+  let valueDefect = defectElement.value;
   if (idDefectOrder != null) {
-    let valueIdDefectOrder = idDefectOrder.value;
-    let url =
-      "http://localhost/KimDuc/radix/admin/?module=reports&action=get_level";
-    defectElement.addEventListener("change", function () {
-      let valueDefect = defectElement.value;
-      if (valueIdDefectOrder != valueDefect) {
-        $.ajax({
-          url: url,
-          method: "POST",
-          data: { defectId: valueDefect },
-          success: function (data) {
-            levelElement.value = data;
-            levelElement.disabled = true;
-          },
-        });
-      } else {
-        levelElement.disabled = false;
-      }
-    });
+    if (valueDefect == idDefectOrder) {
+      levelElement.disabled = false;
+    } else {
+      let url =
+        "http://localhost/KimDuc/radix/admin/?module=reports&action=get_level";
+      $.ajax({
+        url: url,
+        method: "POST",
+        data: { defectId: valueDefect },
+        success: function (data) {
+          levelElement.value = data;
+          levelElement.disabled = true;
+        },
+      });
+    }
   }
 }
 
@@ -178,10 +170,7 @@ if (btnAddDefect != null) {
         data = JSON.parse(data);
         let mathDefectError = false;
         for (let i = 0; i < data.length; i++) {
-          if (
-            data[i]["defect_id"] == defectElement.value &&
-            defectElement.value != idDefectOrder.value
-          ) {
+          if (data[i]["defect_id"] == defect.value) {
             mathDefectError = true;
             break;
           }
@@ -199,6 +188,13 @@ function handelFormSubmit(mathDefectError) {
   let isErrorCate = false;
   let isErrorDefect = false;
   let isErrorQuantity = false;
+  if (cateDefect.value == 0) {
+    errorCate.innerHTML = "Vui lòng chọn danh mục lỗi";
+    isErrorCate = true;
+  } else {
+    errorCate.innerHTML = "";
+    isErrorCate = false;
+  }
 
   if (defect.value == 0) {
     errorDefect.innerHTML = "Vui lòng chọn lỗi";
@@ -230,14 +226,11 @@ function handelFormSubmit(mathDefectError) {
   for (var i = 0; i < files.length; i++) {
     formData.append("files[]", files[i]);
   }
-  formData.append("defect_id", defectElement.value);
+  formData.append("cate_id", cateDefect.value);
+  formData.append("defect_id", defect.value);
   formData.append("defect_quantity", quantityDefect.value);
   formData.append("note", note.value);
   formData.append("report_id", reportId);
-
-  if (defectElement.value == idDefectOrder.value) {
-    formData.append("level", levelElement.value);
-  }
 
   if (!isErrorCate && !isErrorDefect && !isErrorQuantity) {
     url = `${rootUrlAdmin}?module=reports&action=handle_add`;
@@ -325,13 +318,14 @@ function handelFormSubmit(mathDefectError) {
 
 function resetForm() {
   resetDefect();
+  resetCateDefect();
   quantityDefect.value = "";
   fileAdd.value = "";
   note.value = "";
 }
 
 function resetDefect() {
-  if (defectElement != null) {
+  if (defect != null) {
     $.ajax({
       url: `${rootUrlAdmin}?module=reports&action=get_all_defect`,
       success: (data) => {
@@ -340,7 +334,23 @@ function resetDefect() {
         listDefects.forEach((item) => {
           html += `<option value=${item["id"]}>${item["name"]}</option>`;
         });
-        defectElement.innerHTML = html;
+        defect.innerHTML = html;
+      },
+    });
+  }
+}
+
+function resetCateDefect() {
+  if (cateDefect != null) {
+    $.ajax({
+      url: `${rootUrlAdmin}?module=reports&action=get_all_cate_defect`,
+      success: (data) => {
+        let listCateDefects = JSON.parse(data);
+        let html = "<option value=0>Chọn tên danh mục lỗi</option>";
+        listCateDefects.forEach((item) => {
+          html += `<option value=${item["id"]}>${item["name"]}</option>`;
+        });
+        cateDefect.innerHTML = html;
       },
     });
   }
@@ -829,9 +839,11 @@ function renderChart(condition, first = false) {
     data: { condition: condition, first: first },
     method: "POST",
     success: function (data) {
+      console.log(data);
       try {
         data = JSON.parse(data);
         //Chart
+        console.log(data.dataChart);
         $("#chartBox").html(data.dataChart);
         let config = JSON.parse($("#myChart").data("settings"));
         $("#myChart").chart = new Chart($("#myChart"), config);

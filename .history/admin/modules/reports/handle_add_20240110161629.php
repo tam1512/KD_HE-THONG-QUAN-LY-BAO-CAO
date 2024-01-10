@@ -8,8 +8,7 @@
       $reportId = !empty($body['report_id']) ? $body['report_id'] : 'null';
 
       $defect = firstRaw("SELECT level, name, skip, cate_id FROM defects WHERE id = $defectId");
-      $cateId = $defect["cate_id"];
-      $cate = firstRaw("SELECT name FROM defect_categories WHERE id = $cateId");
+      $cate = firstRaw("SELECT name FROM defect_categories WHERE id = ".$defect["cate_id"]);
 
       $files = fileMulti('files');
 
@@ -30,7 +29,8 @@
 
       $defectItem = [
          'name' => $defect['name'],
-         'level' => !empty($level) ? $level : $defect['level'],
+         'level' => $defect['level'],
+         'levelConverter' => getLevelReportDefect($defectQuatity, $defectId),
          'defect_id' => $defectId,
          'cate_id' => $cateId,
          'cate_defect_name' => $cate['name'],

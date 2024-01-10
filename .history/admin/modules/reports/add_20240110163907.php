@@ -193,7 +193,7 @@ $signText = firstRaw("SELECT sign_text FROM sign WHERE user_id = $userId");
                $dataInsertReportDefect = [
                   "report_id" => $reportId,
                   "defect_id" => $itemAdd["defect_id"],
-                  "level" => $itemAdd["level"],
+                  "level" => $itemAdd["levelConverter"],
                   "defect_quantity" => $itemAdd["defect_quantity"],
                   'note' => $itemAdd["note"],
                   'create_at' => $itemAdd['create_at']
@@ -542,7 +542,6 @@ $sumMinorDefects = $quantityDefectReal['sumMinorDefects'];
                         <div class="d-flex">
                            <select name="defect" id="defect" class="form-control mw-210 selectpicker"
                               data-live-search="true" data-title="Lỗi" data-width="100%">
-
                               <?php 
                                  if(!empty($listAllDefects)):
                                     foreach($listAllDefects as $defect):
@@ -559,6 +558,7 @@ $sumMinorDefects = $quantityDefectReal['sumMinorDefects'];
                         <span id="error-defect" class="error"></span>
                      </div>
                   </div>
+
                   <div class="col-4 d-flex">
                      <div class="form-group flex-1">
                         <label for="level">Mức độ lỗi</label>

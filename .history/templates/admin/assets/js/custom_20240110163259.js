@@ -340,7 +340,7 @@ function resetDefect() {
         listDefects.forEach((item) => {
           html += `<option value=${item["id"]}>${item["name"]}</option>`;
         });
-        defectElement.innerHTML = html;
+        defect.innerHTML = html;
       },
     });
   }

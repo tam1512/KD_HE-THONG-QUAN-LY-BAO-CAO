@@ -31,6 +31,7 @@
       $defectItem = [
          'name' => $defect['name'],
          'level' => !empty($level) ? $level : $defect['level'],
+         'levelConverter' => getLevelReportDefect($defectQuatity, $defectId),
          'defect_id' => $defectId,
          'cate_id' => $cateId,
          'cate_defect_name' => $cate['name'],

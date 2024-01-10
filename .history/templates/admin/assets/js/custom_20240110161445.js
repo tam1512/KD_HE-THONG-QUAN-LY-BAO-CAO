@@ -126,16 +126,15 @@ if (
 //Xử lý hiển thị mức độ lỗi theo lỗi
 let defectElement = document.getElementById("defect");
 let levelElement = document.getElementById("level");
-let idDefectOrder = document.getElementById("idDefectOrder");
+let idDefectOrder = document.getElementById("idDefectOrder").value;
 
 if (defectElement != null && levelElement != null) {
   if (idDefectOrder != null) {
-    let valueIdDefectOrder = idDefectOrder.value;
     let url =
       "http://localhost/KimDuc/radix/admin/?module=reports&action=get_level";
     defectElement.addEventListener("change", function () {
       let valueDefect = defectElement.value;
-      if (valueIdDefectOrder != valueDefect) {
+      if (idDefectOrder != valueDefect) {
         $.ajax({
           url: url,
           method: "POST",
@@ -178,10 +177,7 @@ if (btnAddDefect != null) {
         data = JSON.parse(data);
         let mathDefectError = false;
         for (let i = 0; i < data.length; i++) {
-          if (
-            data[i]["defect_id"] == defectElement.value &&
-            defectElement.value != idDefectOrder.value
-          ) {
+          if (data[i]["defect_id"] == defect.value) {
             mathDefectError = true;
             break;
           }
@@ -199,6 +195,13 @@ function handelFormSubmit(mathDefectError) {
   let isErrorCate = false;
   let isErrorDefect = false;
   let isErrorQuantity = false;
+  if (cateDefect.value == 0) {
+    errorCate.innerHTML = "Vui lòng chọn danh mục lỗi";
+    isErrorCate = true;
+  } else {
+    errorCate.innerHTML = "";
+    isErrorCate = false;
+  }
 
   if (defect.value == 0) {
     errorDefect.innerHTML = "Vui lòng chọn lỗi";
@@ -235,7 +238,7 @@ function handelFormSubmit(mathDefectError) {
   formData.append("note", note.value);
   formData.append("report_id", reportId);
 
-  if (defectElement.value == idDefectOrder.value) {
+  if(defectElement.value == idDefectOrder.value) {
     formData.append("level", levelElement.value);
   }
 
@@ -325,13 +328,14 @@ function handelFormSubmit(mathDefectError) {
 
 function resetForm() {
   resetDefect();
+  resetCateDefect();
   quantityDefect.value = "";
   fileAdd.value = "";
   note.value = "";
 }
 
 function resetDefect() {
-  if (defectElement != null) {
+  if (defect != null) {
     $.ajax({
       url: `${rootUrlAdmin}?module=reports&action=get_all_defect`,
       success: (data) => {
@@ -340,7 +344,23 @@ function resetDefect() {
         listDefects.forEach((item) => {
           html += `<option value=${item["id"]}>${item["name"]}</option>`;
         });
-        defectElement.innerHTML = html;
+        defect.innerHTML = html;
+      },
+    });
+  }
+}
+
+function resetCateDefect() {
+  if (cateDefect != null) {
+    $.ajax({
+      url: `${rootUrlAdmin}?module=reports&action=get_all_cate_defect`,
+      success: (data) => {
+        let listCateDefects = JSON.parse(data);
+        let html = "<option value=0>Chọn tên danh mục lỗi</option>";
+        listCateDefects.forEach((item) => {
+          html += `<option value=${item["id"]}>${item["name"]}</option>`;
+        });
+        cateDefect.innerHTML = html;
       },
     });
   }

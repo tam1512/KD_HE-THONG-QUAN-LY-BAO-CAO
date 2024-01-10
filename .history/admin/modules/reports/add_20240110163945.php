@@ -542,7 +542,6 @@ $sumMinorDefects = $quantityDefectReal['sumMinorDefects'];
                         <div class="d-flex">
                            <select name="defect" id="defect" class="form-control mw-210 selectpicker"
                               data-live-search="true" data-title="Lỗi" data-width="100%">
-
                               <?php 
                                  if(!empty($listAllDefects)):
                                     foreach($listAllDefects as $defect):
@@ -559,6 +558,7 @@ $sumMinorDefects = $quantityDefectReal['sumMinorDefects'];
                         <span id="error-defect" class="error"></span>
                      </div>
                   </div>
+
                   <div class="col-4 d-flex">
                      <div class="form-group flex-1">
                         <label for="level">Mức độ lỗi</label>
