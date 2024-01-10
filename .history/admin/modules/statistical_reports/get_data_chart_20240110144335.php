@@ -420,6 +420,7 @@ if(isPost()) {
                $dataPercentSerious .= ''.$item['percent_serious'].', ';
                $dataPercentHeavy .= ''.$item['percent_heavy'].', ';
                $dataPercentLight .= ''.$item['percent_light'].', ';
+               $dataPercentLight .= ''.$item['percent'].', ';
    
                $contentTable .= '
                <tr>
@@ -549,25 +550,11 @@ if(isPost()) {
             resultaql AS ra
             JOIN
             reports AS rp ON rp.id = ra.report_id
-            $filter AND MONTH(ra.create_at) BETWEEN 1 AND 12
-            GROUP BY
-            MONTH(ra.create_at)";
-         } else {
-            $sql = "SELECT
-            MONTH(ra.create_at) AS month,
-            SUM(quantity_serious_real) AS total_serious,
-            SUM(quantity_heavy_real) AS total_heavy,
-            SUM(quantity_light_real) AS total_light,
-            SUM(quantity_inspect) AS total_inspect
-            FROM
-            resultaql AS ra
-            JOIN
-            reports AS rp ON rp.id = ra.report_id
-            $filter AND MONTH(ra.create_at) BETWEEN 1 AND 12 AND rp.factory_id = $object
+            WHERE
+            MONTH(ra.create_at) BETWEEN 1 AND 12
             GROUP BY
             MONTH(ra.create_at)";
          }
-         
          $listMonth = [
             ["month" => 1],
             ["month" => 2],
@@ -605,152 +592,8 @@ if(isPost()) {
             $listMonth[$key] = $m;
          }
 
-         $labels = "";
 
-         $dataTotalSerious = "";
-         $dataTotalHeavy = "";
-         $dataTotalLight = "";
 
-         $dataPercentSerious = "";
-         $dataPercentHeavy = "";
-         $dataPercentLight = "";
-
-         $dataTable = '
-            <table class="table table-bordered">
-               <tr>
-                  <th>Tháng</th>
-                  <th>Số lượng kiểm</th>
-                  <th>Lỗi nghiêm trọng</th>
-                  <th>Lỗi nặng</th>
-                  <th>Lỗi nhẹ</th>
-                  <th>Tỷ lệ nghiêm trọng (%)</th>
-                  <th>Tỷ lệ nặng (%)</th>
-                  <th>Tỷ lệ nhẹ (%)</th>
-               </tr>
-            ';
-
-            $contentTable = "";
-            foreach($listMonth as $item) {
-               $labels .= '"'.$item['month'].'", ';
-               $dataTotalSerious .= ''.$item['total_serious'].', ';
-               $dataTotalHeavy .= ''.$item['total_heavy'].', ';
-               $dataTotalLight .= ''.$item['total_light'].', ';
-               $dataPercentSerious .= ''.$item['percent_serious'].', ';
-               $dataPercentHeavy .= ''.$item['percent_heavy'].', ';
-               $dataPercentLight .= ''.$item['percent_light'].', ';
-
-               $contentTable .= '
-               <tr>
-                  <td> Tháng '.$item['month'].'</td>
-                  <td>'.$item['total_inspect'].'</td>
-                  <td>'.$item['total_serious'].'</td>
-                  <td>'.$item['total_heavy'].'</td>
-                  <td>'.$item['total_light'].'</td>
-                  <td>'.$item['percent_serious'].'</td>
-                  <td>'.$item['percent_heavy'].'</td>
-                  <td>'.$item['percent_light'].'</td>
-               </tr>
-               ';
-            }
-
-            $dataTable .= $contentTable.'</table>';
-
-            $dataRender = '
-            {
-               "labels": ['.trim(trim($labels),',').'],
-               "datasets": [
-               {
-                  "label": "Số lỗi nghiêm trọng",
-                  "data": ['.trim(trim($dataTotalSerious),',').'],
-                  "backgroundColor": ["rgba(255, 26, 104, 0.2)"],
-                  "borderColor": ["rgba(255, 26, 104, 1)"],
-                  "borderWidth": 1,
-                  "type": "bar",
-                  "tension": 0.4
-               },
-               {
-                  "label": "Số lỗi lỗi nặng",
-                  "data": ['.trim(trim($dataTotalHeavy),',').'],
-                  "backgroundColor": ["rgba(234, 154, 0, 0.2)"],
-                  "borderColor": ["rgba(234, 154, 0, 1)"],
-                  "borderWidth": 1,
-                  "type": "bar",
-                  "tension": 0.4
-               },
-               {
-                  "label": "Số lỗi nhẹ",
-                  "data": ['.trim(trim($dataTotalLight),',').'],
-                  "backgroundColor": ["rgba(45, 235, 0, 0.2)"],
-                  "borderColor": ["rgba(45, 235, 0, 1)"],
-                  "borderWidth": 1,
-                  "type": "bar",
-                  "tension": 0.4
-               },
-               {
-                  "label": "Tỉ lệ nghiêm trọng",
-                  "data": ['.trim(trim($dataPercentSerious),',').'],
-                  "backgroundColor": ["rgba(255, 0, 0, 0.2)"],
-                  "borderColor": ["rgba(255, 0, 0, 1)"],
-                  "borderWidth": 1,
-                  "tension": 0.4,
-                  "yAxisID": "percentage"
-               },
-               {
-                  "label": "Tỉ lệ nặng",
-                  "data": ['.trim(trim($dataPercentHeavy),',').'],
-                  "backgroundColor": ["rgba(254, 235, 0, 0.2)"],
-                  "borderColor": ["rgba(254, 235, 0, 1)"],
-                  "borderWidth": 1,
-                  "tension": 0.4,
-                  "yAxisID": "percentage"
-               },
-               {
-                  "label": "Tỉ lệ nhẹ",
-                  "data": ['.trim(trim($dataPercentLight),',').'],
-                  "backgroundColor": ["rgba(92, 251, 0, 0.2)"],
-                  "borderColor": ["rgba(92, 251, 0, 1)"],
-                  "borderWidth": 1,
-                  "tension": 0.4,
-                  "yAxisID": "percentage"
-               }
-               ]
-            }
-            ';
-
-            $config = '
-            {
-               "type": "line",
-               "data": '.$dataRender.',
-               "options": {
-                  "plugins": {
-                     "title": {
-                        "display": true,
-                        "text": "Biểu đồ tỷ lệ lỗi chất lượng may đầu vào theo 12 tháng '.$time.'"
-                     }
-                  },
-               "scales": {
-                  "y": {
-                     "beginAtZero": true,
-                     "title": {
-                     "display": true,
-                     "text": "Số lượng lỗi"
-                     }
-                  },
-                  "percentage": {
-                     "beginAtZero": true,
-                     "position": "right",
-                     "title": {
-                     "display": true,
-                     "text": "Phần trăm lỗi (%)"
-                     },
-                     "grid": {
-                        "drawOnChartArea": false
-                     }
-                  }
-               }
-               }
-            }
-            ';
       }
    }
 

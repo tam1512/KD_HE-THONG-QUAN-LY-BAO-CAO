@@ -29,7 +29,6 @@ $listAllFactories = getRaw("SELECT id, name FROM factories");
 $yearAllReport = getRaw("SELECT DISTINCT YEAR(create_at) AS year FROM reports ORDER BY year ASC");
 $listMonth = [1,2,3,4,5,6,7,8,9,10,11,12];
 $currentYear = date("Y");
-$currentMonth = date("m");
 $minYearCreatReport = null;
 $maxYearCreatReport = null;
 $listYear = [];
@@ -61,9 +60,6 @@ $msgType = getFlashData('msg_type');
                      </option>
                      <option value="2">
                         Theo năm
-                     </option>
-                     <option value="3">
-                        Theo năm (12 tháng)
                      </option>
                   </select>
                   <span class="error" id="error-type"></span>
@@ -100,8 +96,7 @@ $msgType = getFlashData('msg_type');
                         if(!empty($listMonth)):
                            foreach($listMonth as $m):
                      ?>
-                     <option value="<?php echo $m ?>"
-                        <?php echo $isFirst && $m == $currentMonth ? "selected" : false ?>>
+                     <option value="<?php echo $m ?>" <?php echo $isFirst ? "selected" : false ?>>
                         <?php echo $m ?>
                      </option>
                      <?php endforeach; endif; ?>
@@ -117,7 +112,13 @@ $msgType = getFlashData('msg_type');
                         if(!empty($listYear)):
                            foreach($listYear as $y):
                      ?>
-                     <option value="<?php echo $y ?>" <?php echo $isFirst && $y == $currentYear ? "selected" : false ?>>
+                     <option value="<?php echo $y ?>" <?php
+                        echo (!empty($old['year']) && $old['year']==$y)? 'selected' : false;
+                        if($isFirst && $y==date('Y')) {
+                           echo "selected";
+                           $isFirst = false;
+                        }
+                        ?>>
                         <?php echo $y ?>
                      </option>
                      <?php endforeach; endif; ?>

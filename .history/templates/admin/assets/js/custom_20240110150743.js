@@ -878,7 +878,6 @@ function renderChart(condition, first = false) {
       try {
         data = JSON.parse(data);
         //Chart
-        console.log(data.dataChart);
         $("#chartBox").html(data.dataChart);
         let config = JSON.parse($("#myChart").data("settings"));
         $("#myChart").chart = new Chart($("#myChart"), config);

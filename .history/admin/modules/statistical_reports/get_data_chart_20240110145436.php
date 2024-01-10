@@ -549,25 +549,11 @@ if(isPost()) {
             resultaql AS ra
             JOIN
             reports AS rp ON rp.id = ra.report_id
-            $filter AND MONTH(ra.create_at) BETWEEN 1 AND 12
-            GROUP BY
-            MONTH(ra.create_at)";
-         } else {
-            $sql = "SELECT
-            MONTH(ra.create_at) AS month,
-            SUM(quantity_serious_real) AS total_serious,
-            SUM(quantity_heavy_real) AS total_heavy,
-            SUM(quantity_light_real) AS total_light,
-            SUM(quantity_inspect) AS total_inspect
-            FROM
-            resultaql AS ra
-            JOIN
-            reports AS rp ON rp.id = ra.report_id
-            $filter AND MONTH(ra.create_at) BETWEEN 1 AND 12 AND rp.factory_id = $object
+            WHERE
+            MONTH(ra.create_at) BETWEEN 1 AND 12
             GROUP BY
             MONTH(ra.create_at)";
          }
-         
          $listMonth = [
             ["month" => 1],
             ["month" => 2],
@@ -605,12 +591,10 @@ if(isPost()) {
             $listMonth[$key] = $m;
          }
 
-         $labels = "";
-
          $dataTotalSerious = "";
          $dataTotalHeavy = "";
          $dataTotalLight = "";
-
+         
          $dataPercentSerious = "";
          $dataPercentHeavy = "";
          $dataPercentLight = "";
@@ -628,7 +612,7 @@ if(isPost()) {
                   <th>Tỷ lệ nhẹ (%)</th>
                </tr>
             ';
-
+   
             $contentTable = "";
             foreach($listMonth as $item) {
                $labels .= '"'.$item['month'].'", ';
@@ -638,7 +622,7 @@ if(isPost()) {
                $dataPercentSerious .= ''.$item['percent_serious'].', ';
                $dataPercentHeavy .= ''.$item['percent_heavy'].', ';
                $dataPercentLight .= ''.$item['percent_light'].', ';
-
+   
                $contentTable .= '
                <tr>
                   <td> Tháng '.$item['month'].'</td>
@@ -652,15 +636,15 @@ if(isPost()) {
                </tr>
                ';
             }
-
+   
             $dataTable .= $contentTable.'</table>';
-
+   
             $dataRender = '
             {
                "labels": ['.trim(trim($labels),',').'],
                "datasets": [
                {
-                  "label": "Số lỗi nghiêm trọng",
+                  "label": Số lỗi nghiêm trọng",
                   "data": ['.trim(trim($dataTotalSerious),',').'],
                   "backgroundColor": ["rgba(255, 26, 104, 0.2)"],
                   "borderColor": ["rgba(255, 26, 104, 1)"],
@@ -716,7 +700,7 @@ if(isPost()) {
                ]
             }
             ';
-
+   
             $config = '
             {
                "type": "line",
@@ -751,6 +735,7 @@ if(isPost()) {
                }
             }
             ';
+         
       }
    }
 

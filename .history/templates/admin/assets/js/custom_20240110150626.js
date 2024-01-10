@@ -834,7 +834,7 @@ function validateStatisticalReports() {
     }
   }
 
-  if (valueType == 2 || valueType == 3) {
+  if (valueType == 2) {
     if (valueYear == 0) {
       errorYear.innerText = "Chưa chọn năm";
       check = false;
@@ -852,7 +852,7 @@ function validateStatisticalReports() {
         valueYear,
       };
     }
-    if (valueType == 2 || valueType == 3) {
+    if (valueType == 2) {
       return {
         valueObj,
         valueType,
@@ -878,7 +878,6 @@ function renderChart(condition, first = false) {
       try {
         data = JSON.parse(data);
         //Chart
-        console.log(data.dataChart);
         $("#chartBox").html(data.dataChart);
         let config = JSON.parse($("#myChart").data("settings"));
         $("#myChart").chart = new Chart($("#myChart"), config);

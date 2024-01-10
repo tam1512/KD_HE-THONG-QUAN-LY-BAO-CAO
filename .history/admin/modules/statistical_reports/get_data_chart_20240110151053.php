@@ -605,8 +605,6 @@ if(isPost()) {
             $listMonth[$key] = $m;
          }
 
-         $labels = "";
-
          $dataTotalSerious = "";
          $dataTotalHeavy = "";
          $dataTotalLight = "";
@@ -660,7 +658,7 @@ if(isPost()) {
                "labels": ['.trim(trim($labels),',').'],
                "datasets": [
                {
-                  "label": "Số lỗi nghiêm trọng",
+                  "label": Số lỗi nghiêm trọng",
                   "data": ['.trim(trim($dataTotalSerious),',').'],
                   "backgroundColor": ["rgba(255, 26, 104, 0.2)"],
                   "borderColor": ["rgba(255, 26, 104, 1)"],

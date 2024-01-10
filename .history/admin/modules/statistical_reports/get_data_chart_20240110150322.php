@@ -549,7 +549,8 @@ if(isPost()) {
             resultaql AS ra
             JOIN
             reports AS rp ON rp.id = ra.report_id
-            $filter AND MONTH(ra.create_at) BETWEEN 1 AND 12
+            WHERE
+            MONTH(ra.create_at) BETWEEN 1 AND 12
             GROUP BY
             MONTH(ra.create_at)";
          } else {
@@ -563,7 +564,8 @@ if(isPost()) {
             resultaql AS ra
             JOIN
             reports AS rp ON rp.id = ra.report_id
-            $filter AND MONTH(ra.create_at) BETWEEN 1 AND 12 AND rp.factory_id = $object
+            WHERE
+            MONTH(ra.create_at) BETWEEN 1 AND 12 AND rp.factory_id = $object
             GROUP BY
             MONTH(ra.create_at)";
          }
@@ -604,8 +606,6 @@ if(isPost()) {
             }
             $listMonth[$key] = $m;
          }
-
-         $labels = "";
 
          $dataTotalSerious = "";
          $dataTotalHeavy = "";
@@ -660,7 +660,7 @@ if(isPost()) {
                "labels": ['.trim(trim($labels),',').'],
                "datasets": [
                {
-                  "label": "Số lỗi nghiêm trọng",
+                  "label": Số lỗi nghiêm trọng",
                   "data": ['.trim(trim($dataTotalSerious),',').'],
                   "backgroundColor": ["rgba(255, 26, 104, 0.2)"],
                   "borderColor": ["rgba(255, 26, 104, 1)"],

@@ -29,7 +29,6 @@ $listAllFactories = getRaw("SELECT id, name FROM factories");
 $yearAllReport = getRaw("SELECT DISTINCT YEAR(create_at) AS year FROM reports ORDER BY year ASC");
 $listMonth = [1,2,3,4,5,6,7,8,9,10,11,12];
 $currentYear = date("Y");
-$currentMonth = date("m");
 $minYearCreatReport = null;
 $maxYearCreatReport = null;
 $listYear = [];
@@ -59,11 +58,9 @@ $msgType = getFlashData('msg_type');
                      <option value="1" <?php echo $isFirst ? "selected" : false ?>>
                         Theo tháng
                      </option>
-                     <option value="2">
+                     <option value="2"
+                        <?php echo (!empty($old['type_time']) && $old['type_time']==2)? 'selected' : false ?>>
                         Theo năm
-                     </option>
-                     <option value="3">
-                        Theo năm (12 tháng)
                      </option>
                   </select>
                   <span class="error" id="error-type"></span>
@@ -75,14 +72,21 @@ $msgType = getFlashData('msg_type');
                      <option value="0">
                         Chọn đối tượng
                      </option>
-                     <option value="all" <?php echo $isFirst ? "selected" : false ?>>
+                     <option value="all" <?php 
+                        echo (!empty($old['object']) && $old['object']=='all')? 'selected' : false;
+                        if($isFirst) {
+                           echo "selected";
+                         }
+                        ?>>
                         Tất cả
                      </option>
                      <?php 
                   if(!empty($listAllFactories)):
                      foreach($listAllFactories as $fac):
                ?>
-                     <option value="<?php echo $fac['id'] ?>">
+                     <option value="<?php echo $fac['id'] ?>" <?php
+                        echo (!empty($facId) && $facId==$fac['id'])? 'selected' : false ;
+                        ?>>
                         <?php echo $fac['name'] ?></option>
                      <?php 
                   endforeach;
@@ -100,8 +104,12 @@ $msgType = getFlashData('msg_type');
                         if(!empty($listMonth)):
                            foreach($listMonth as $m):
                      ?>
-                     <option value="<?php echo $m ?>"
-                        <?php echo $isFirst && $m == $currentMonth ? "selected" : false ?>>
+                     <option value="<?php echo $m ?>" <?php 
+                        echo (!empty($old['month']) && $old['month']==$m)? 'selected' : false; 
+                        if($isFirst && $m==date('m')) {
+                           echo "selected";
+                        }
+                        ?>>
                         <?php echo $m ?>
                      </option>
                      <?php endforeach; endif; ?>
@@ -117,7 +125,13 @@ $msgType = getFlashData('msg_type');
                         if(!empty($listYear)):
                            foreach($listYear as $y):
                      ?>
-                     <option value="<?php echo $y ?>" <?php echo $isFirst && $y == $currentYear ? "selected" : false ?>>
+                     <option value="<?php echo $y ?>" <?php
+                        echo (!empty($old['year']) && $old['year']==$y)? 'selected' : false;
+                        if($isFirst && $y==date('Y')) {
+                           echo "selected";
+                           $isFirst = false;
+                        }
+                        ?>>
                         <?php echo $y ?>
                      </option>
                      <?php endforeach; endif; ?>

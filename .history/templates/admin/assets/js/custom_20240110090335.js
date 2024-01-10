@@ -761,7 +761,6 @@ let isChart = false;
 //điều kiện cho chart đầu hiển thị đầu tiên
 $conditionDefault = {
   valueObj: "all",
-  valueType: 1,
   valueMonth: new Date().getMonth() + 1,
   valueYear: new Date().getFullYear(),
 };
@@ -770,7 +769,7 @@ renderChart($conditionDefault, true);
 if (typeTimeObj != null) {
   typeTimeObj.addEventListener("change", () => {
     let value = typeTimeObj.value;
-    if (value == 2 || value == 3) {
+    if (value == 2) {
       monthObj.disabled = true;
     } else {
       monthObj.disabled = false;
@@ -782,6 +781,11 @@ if (btnCreateChart != null) {
     e.preventDefault();
     let condition = validateStatisticalReports();
     if (condition) {
+      var canvas = document.getElementById("myChart");
+
+      var ctx = canvas.getContext("2d");
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+
       renderChart(condition);
     }
   });
@@ -808,38 +812,28 @@ function validateStatisticalReports() {
   if (valueType == 0) {
     errorType.innerText = "Chưa chọn loại thời gian";
     check = false;
-  } else {
-    errorType.innerText = "";
   }
 
   if (valueObj == 0) {
     errorObject.innerText = "Chưa chọn loại đối tượng";
     check = false;
-  } else {
-    errorObject.innerText = "";
   }
 
   if (valueType == 1) {
     if (valueMonth == 0) {
       errorMonth.innerText = "Chưa chọn tháng";
       check = false;
-    } else {
-      errorMonth.innerText = "";
     }
     if (valueYear == 0) {
       errorYear.innerText = "Chưa chọn năm";
       check = false;
-    } else {
-      errorYear.innerText = "";
     }
   }
 
-  if (valueType == 2 || valueType == 3) {
+  if (valueType == 2) {
     if (valueYear == 0) {
       errorYear.innerText = "Chưa chọn năm";
       check = false;
-    } else {
-      errorYear.innerText = "";
     }
   }
 
@@ -852,7 +846,7 @@ function validateStatisticalReports() {
         valueYear,
       };
     }
-    if (valueType == 2 || valueType == 3) {
+    if (valueType == 2) {
       return {
         valueObj,
         valueType,
@@ -874,11 +868,9 @@ function renderChart(condition, first = false) {
     data: { condition: condition, first: first },
     method: "POST",
     success: function (data) {
-      console.log(data);
       try {
         data = JSON.parse(data);
         //Chart
-        console.log(data.dataChart);
         $("#chartBox").html(data.dataChart);
         let config = JSON.parse($("#myChart").data("settings"));
         $("#myChart").chart = new Chart($("#myChart"), config);

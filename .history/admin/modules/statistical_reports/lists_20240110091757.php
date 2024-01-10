@@ -100,8 +100,7 @@ $msgType = getFlashData('msg_type');
                         if(!empty($listMonth)):
                            foreach($listMonth as $m):
                      ?>
-                     <option value="<?php echo $m ?>"
-                        <?php echo $isFirst && $m == $currentMonth ? "selected" : false ?>>
+                     <option value="<?php echo $m ?>" <?php echo $isFirst ? "selected" : false ?>>
                         <?php echo $m ?>
                      </option>
                      <?php endforeach; endif; ?>
