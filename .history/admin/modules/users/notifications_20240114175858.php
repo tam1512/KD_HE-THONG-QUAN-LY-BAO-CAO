@@ -150,6 +150,10 @@ if(!empty($toast)):
       foreach($listNotificationsByUser as $n):
          if(!empty($n['show']) && $n['show'] == 2):
 ?>
+<audio id="toast-audio" class="d-none" controls autoplay>
+   <source src="<?php echo _WEB_HOST_ROOT_ADMIN."\modules\\reports\audios\\noti.wav" ?>" type="audio/mp3">
+   Your browser does not support the audio element.
+</audio>
 <a href="<?php echo getLinkAdmin('reports', 'seen', ['id' => $n['report_id']]) ?>">
    <div class="toast" role="alert" aria-live="assertive" aria-atomic="true" data-delay="5000">
       <div class="toast-header">
@@ -163,7 +167,6 @@ if(!empty($toast)):
       <div class="toast-body text-muted">
          <?php echo $n['content'] ?>
       </div>
-      <audio src="<?php echo _WEB_PATH_ROOT_ADMIN."\modules\\reports\audios\\noti.wav" ?>"></audio>
    </div>
 </a>
 <?php 

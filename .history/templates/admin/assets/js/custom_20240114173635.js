@@ -718,7 +718,7 @@ function validateSignGC() {
 //xử lý thông báo
 function loadNotifications() {
   $.ajax({
-    url: "http://localhost/KimDuc/radix/admin/?module=reports&action=notifications",
+    url: "http://localhost/KimDuc/radix/admin/?module=users&action=notifications",
     method: "POST",
     data: { list: true },
     success: function (data) {
@@ -730,7 +730,7 @@ function loadNotifications() {
 function loadCountNotifications() {
   setInterval(function () {
     $.ajax({
-      url: "http://localhost/KimDuc/radix/admin/?module=reports&action=notifications",
+      url: "http://localhost/KimDuc/radix/admin/?module=users&action=notifications",
       method: "POST",
       data: { count: true },
       success: function (data) {
@@ -743,7 +743,7 @@ function loadCountNotifications() {
 function showToast() {
   setInterval(function () {
     $.ajax({
-      url: "http://localhost/KimDuc/radix/admin/?module=reports&action=notifications",
+      url: "http://localhost/KimDuc/radix/admin/?module=users&action=notifications",
       method: "POST",
       data: { toast: true },
       success: function (data) {
@@ -751,6 +751,12 @@ function showToast() {
         $("#toast-content").html(data);
         $(".toast").each(function () {
           $(this).toast("show");
+
+          // Truy cập đến phần tử audio trong toast
+          var audioElement = $(this).find("#toast-audio");
+
+          // Phát âm thanh
+          audioElement[0].play();
         });
       },
       error: function (error) {},
