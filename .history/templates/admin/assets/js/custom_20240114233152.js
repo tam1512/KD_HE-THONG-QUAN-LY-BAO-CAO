@@ -747,6 +747,7 @@ function showToast() {
       method: "POST",
       data: { toast: true },
       success: function (data) {
+        console.log(data);
         $("#toast-content").html(data);
         $(".toast").each(function () {
           $(this).toast("show");
@@ -920,7 +921,6 @@ function renderChart(condition, first = false) {
       // console.log(data);
       try {
         data = JSON.parse(data);
-        // console.log(data.dataChart);
         //Chart
         $("#chartBox").html(data.dataChart);
         let config = JSON.parse($("#myChart").data("settings"));
@@ -937,24 +937,6 @@ function renderChart(condition, first = false) {
 let changeStatus = document.getElementById("chang_status");
 let addSuggest = document.getElementById("add_suggest");
 let btnAddSuggest = document.getElementById("btnAddSuggest");
-let deduction = document.getElementById("deduction-content");
-let deductionValue = null;
-let deductionUnit = null;
-//Xử lý khi chọn Nhận tiền trừ
-if (changeStatus != null) {
-  if (changeStatus.value == "4") {
-    deduction.classList.remove("d-none");
-  } else {
-    deduction.classList.add("d-none");
-  }
-  changeStatus.addEventListener("change", function () {
-    if (this.value == "4") {
-      deduction.classList.remove("d-none");
-    } else {
-      deduction.classList.add("d-none");
-    }
-  });
-}
 
 if (btnAddSuggest && addSuggest && changeStatus) {
   btnAddSuggest.addEventListener("click", (e) => {
@@ -962,48 +944,18 @@ if (btnAddSuggest && addSuggest && changeStatus) {
     let status = changeStatus.value;
     let suggest = addSuggest.value;
     let reportId = document.getElementById("report_id").value;
-    deductionValue = document.getElementById("deduction").value;
-    deductionUnit = document.getElementById("unit").value;
-
     let url =
       "http://localhost/KimDuc/radix/admin/?module=reports&action=change_suggest_status";
-    let isContinue = true;
 
-    if (changeStatus.value == 4) {
-      if (deductionValue == "") {
-        document.getElementById("deduction-error").innerHTML =
-          "Vui lòng nhập số trừ tiền";
-        isContinue = false;
-      } else {
-        document.getElementById("deduction-error").innerHTML = "";
-      }
-      if (deductionUnit == "") {
-        document.getElementById("unit-error").innerHTML =
-          "Vui lòng chọn đơn vị";
-        isContinue = false;
-      } else {
-        document.getElementById("unit-error").innerHTML = "";
-      }
-    }
-
-    if (isContinue == true) {
-      $.ajax({
-        url: url,
-        method: "POST",
-        data: {
-          status: status,
-          suggest: suggest,
-          reportId: reportId,
-          deductionValue: deductionValue,
-          unit: deductionUnit,
-        },
-        success: function (data) {
-          console.log(data);
-          if (data) {
-            $("#content_suggest").text(suggest);
-          }
-        },
-      });
-    }
+    $.ajax({
+      url: url,
+      method: "POST",
+      data: { status: status, suggest: suggest, reportId: reportId },
+      success: function (data) {
+        if (data) {
+          $("#content_suggest").text(suggest);
+        }
+      },
+    });
   });
 }

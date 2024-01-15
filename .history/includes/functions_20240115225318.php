@@ -800,20 +800,4 @@ function getScore($percentSerious, $percentHeavy, $percentLight) {
   $serious = $percentSerious * 60 / 100;
   $heavy = $percentHeavy * 30 / 100;
   $light = $percentLight * 10 / 100;
-
-  $total = $serious + $heavy + $light;
-
-  if($total < 10) {
-    return 100;
-  } else if($total >= 10 && $total <= 20) {
-    return 90;
-  } else if($total > 20 && $total <= 30) {
-    return 80;
-  } else if($total > 30 && $total <= 40) {
-    return 70;
-  } else if($total > 40) {
-    return 60;
-  }
-
-  return false;
 }

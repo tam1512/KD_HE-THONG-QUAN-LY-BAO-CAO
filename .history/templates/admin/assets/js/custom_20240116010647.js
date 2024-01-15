@@ -965,6 +965,7 @@ if (btnAddSuggest && addSuggest && changeStatus) {
     deductionValue = document.getElementById("deduction").value;
     deductionUnit = document.getElementById("unit").value;
 
+    console.log(deductionValue);
     let url =
       "http://localhost/KimDuc/radix/admin/?module=reports&action=change_suggest_status";
     let isContinue = true;
@@ -972,7 +973,7 @@ if (btnAddSuggest && addSuggest && changeStatus) {
     if (changeStatus.value == 4) {
       if (deductionValue == "") {
         document.getElementById("deduction-error").innerHTML =
-          "Vui lòng nhập số trừ tiền";
+          "Vui lòng nhập số tiền trừ";
         isContinue = false;
       } else {
         document.getElementById("deduction-error").innerHTML = "";
@@ -982,11 +983,13 @@ if (btnAddSuggest && addSuggest && changeStatus) {
           "Vui lòng chọn đơn vị";
         isContinue = false;
       } else {
-        document.getElementById("unit-error").innerHTML = "";
+        document.getElementById("deduction-error").innerHTML = "";
       }
     }
 
-    if (isContinue == true) {
+    console.log(isContinue);
+
+    if (isContinue) {
       $.ajax({
         url: url,
         method: "POST",

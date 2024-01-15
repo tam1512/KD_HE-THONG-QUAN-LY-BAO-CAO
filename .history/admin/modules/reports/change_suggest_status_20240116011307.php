@@ -7,7 +7,7 @@
       $deductionValue = $body['deductionValue'];
       $unit = $body['unit'];
 
-      if($status == "4") {
+      if(!empty($deductionValue)) {
          $deduction = [
             'value' => $deductionValue,
             'unit' => $unit,
@@ -22,7 +22,6 @@
          $dataUpdate = [
             'suggest' => $suggest,
             'status' => $status,
-            'deduction' => "",
             'update_at' => date("d-m-Y H:i:s")
          ];
       }

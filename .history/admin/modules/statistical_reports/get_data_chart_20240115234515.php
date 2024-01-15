@@ -36,7 +36,7 @@ if(isPost()) {
 
    $isMonth = false;
 
-   $isNotAll = false;
+
    if(!empty($year)) {
       if( !empty($filter) && strpos($filter, "WHERE") >= 0) {
          $operator = 'AND';
@@ -728,8 +728,6 @@ if(isPost()) {
             $filter AND MONTH(ra.create_at) BETWEEN 1 AND 12 AND rp.factory_id = $object AND ra.quantity_serious_real > 0
             GROUP BY
             MONTH(ra.create_at)";
-
-            $isNotAll = true;
          }
          
          $listMonth = [
@@ -753,53 +751,25 @@ if(isPost()) {
          }
          foreach($listMonth as $key => $m) {
             if(!empty($listMonthArr[$key])) {
-               if($isNotAll) {
-                  if(!empty($listMonthSerious)) {
-                     $quantitySerious = 0;
-                     foreach($listMonthSerious as $s) {
-                        if($s['month'] == $m['month']) {
-                           $quantitySerious = $s['quantity_report_serious'];
-                           break;
-                        }
-                     }
-                     $percentSerious = round($quantitySerious / $listMonthArr[$key]['quantity_report'] * 100, 2);
-                     $m['quantity_report_serious'] = $quantitySerious;
-                  } else {
-                     $m['quantity_report_serious'] = 0;
-                     $percentSerious = 0;
-                  }
-               } else {
-                  $percentSerious = round($listMonthArr[$key]['total_serious'] / $listMonthArr[$key]['total_inspect'] * 100, 2);
-               }
-
-               $percentHeavy = round($listMonthArr[$key]['total_heavy'] / $listMonthArr[$key]['total_inspect'] * 100, 2);
-               $percentLight = round($listMonthArr[$key]['total_light'] / $listMonthArr[$key]['total_inspect'] * 100, 2);
                $m['total_serious'] = $listMonthArr[$key]['total_serious'];
                $m['total_heavy'] = $listMonthArr[$key]['total_heavy'];
                $m['total_light'] = $listMonthArr[$key]['total_light'];
                $m['total_inspect'] = $listMonthArr[$key]['total_inspect'];
-               $m['quantity_report'] = (!empty($listMonthArr[$key]['quantity_report']) ? $listMonthArr[$key]['quantity_report'] : 0);
-               $m['percent_serious'] = $percentSerious;
-               $m['percent_heavy'] = $percentHeavy;
-               $m['percent_light'] = $percentLight;
-               if($isNotAll) {
-                  $m['score'] = getScore($percentSerious, $percentHeavy, $percentLight);
-               }
+               $m['quantity_report'] = $listMonthArr[$key]['quantity_report'];
+               $m['percent_serious'] = round($listMonthArr[$key]['total_serious'] / $listMonthArr[$key]['total_inspect'] * 100, 2);
+               $m['percent_heavy'] = round($listMonthArr[$key]['total_heavy'] / $listMonthArr[$key]['total_inspect'] * 100, 2);
+               $m['percent_light'] = round($listMonthArr[$key]['total_light'] / $listMonthArr[$key]['total_inspect'] * 100, 2);
             } else {
                $m['total_serious'] = 0;
                $m['total_heavy'] = 0;
                $m['total_light'] = 0;
                $m['total_inspect'] = 0;
-               $m['quantity_report'] = 0;
-               $m['quantity_report_serious'] = 0;
                $m['percent_serious'] = 0;
                $m['percent_heavy'] = 0;
                $m['percent_light'] = 0;
-               $m['score'] = 0;
             }
             $listMonth[$key] = $m;
          }
-
 
          $labels = "";
 
@@ -811,41 +781,19 @@ if(isPost()) {
          $dataPercentHeavy = "";
          $dataPercentLight = "";
 
-         if($isNotAll) {
-            $dataTable = '
-               <table class="table table-bordered">
-                  <tr>
-                     <th>Tháng</th>
-                     <th>Số lượng kiểm</th>
-                     <th>Số báo cáo</th>
-                     <th>Số báo cáo nghiêm trọng</th>
-                     <th>Lỗi nghiêm trọng</th>
-                     <th>Lỗi nặng</th>
-                     <th>Lỗi nhẹ</th>
-                     <th>Tỷ lệ nghiêm trọng (%)</th>
-                     <th>Tỷ lệ nặng (%)</th>
-                     <th>Tỷ lệ nhẹ (%)</th>
-                     <th>Điểm</th>
-                  </tr>
-               ';
-
-         } else {
-            $dataTable = '
-               <table class="table table-bordered">
-                  <tr>
-                     <th>Tháng</th>
-                     <th>Số lượng kiểm</th>
-                     <th>Lỗi nghiêm trọng</th>
-                     <th>Lỗi nặng</th>
-                     <th>Lỗi nhẹ</th>
-                     <th>Tỷ lệ nghiêm trọng (%)</th>
-                     <th>Tỷ lệ nặng (%)</th>
-                     <th>Tỷ lệ nhẹ (%)</th>
-                  </tr>
-               ';
-
-         }
-
+         $dataTable = '
+            <table class="table table-bordered">
+               <tr>
+                  <th>Tháng</th>
+                  <th>Số lượng kiểm</th>
+                  <th>Lỗi nghiêm trọng</th>
+                  <th>Lỗi nặng</th>
+                  <th>Lỗi nhẹ</th>
+                  <th>Tỷ lệ nghiêm trọng (%)</th>
+                  <th>Tỷ lệ nặng (%)</th>
+                  <th>Tỷ lệ nhẹ (%)</th>
+               </tr>
+            ';
 
             $contentTable = "";
             foreach($listMonth as $item) {
@@ -857,39 +805,18 @@ if(isPost()) {
                $dataPercentHeavy .= ''.$item['percent_heavy'].', ';
                $dataPercentLight .= ''.$item['percent_light'].', ';
 
-               if($isNotAll) {
-                  $contentTable .= '
-                  <tr>
-                     <td> Tháng '.$item['month'].'</td>
-                     <td>'.$item['total_inspect'].'</td>
-                     <td>'.$item['quantity_report'].'</td>
-                     <td>'.(!empty($item['quantity_report_serious']) ? $item['quantity_report_serious'] : 0).'</td>
-                     <td>'.$item['total_serious'].'</td>
-                     <td>'.$item['total_heavy'].'</td>
-                     <td>'.$item['total_light'].'</td>
-                     <td>'.$item['percent_serious'].'%</td>
-                     <td>'.$item['percent_heavy'].'%</td>
-                     <td>'.$item['percent_light'].'%</td>
-                     <td>'.$item['score'].'</td>
-                  </tr>
-                  ';
-                  
-               } else {
-                  $contentTable .= '
-                  <tr>
-                     <td> Tháng '.$item['month'].'</td>
-                     <td>'.$item['total_inspect'].'</td>
-                     <td>'.$item['total_serious'].'</td>
-                     <td>'.$item['total_heavy'].'</td>
-                     <td>'.$item['total_light'].'</td>
-                     <td>'.$item['percent_serious'].'%</td>
-                     <td>'.$item['percent_heavy'].'%</td>
-                     <td>'.$item['percent_light'].'%</td>
-                  </tr>
-                  ';
-
-               }
-
+               $contentTable .= '
+               <tr>
+                  <td> Tháng '.$item['month'].'</td>
+                  <td>'.$item['total_inspect'].'</td>
+                  <td>'.$item['total_serious'].'</td>
+                  <td>'.$item['total_heavy'].'</td>
+                  <td>'.$item['total_light'].'</td>
+                  <td>'.$item['percent_serious'].'</td>
+                  <td>'.$item['percent_heavy'].'</td>
+                  <td>'.$item['percent_light'].'</td>
+               </tr>
+               ';
             }
 
             $dataTable .= $contentTable.'</table>';

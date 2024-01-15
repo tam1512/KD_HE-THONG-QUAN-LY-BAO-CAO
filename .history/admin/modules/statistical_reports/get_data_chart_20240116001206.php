@@ -36,7 +36,7 @@ if(isPost()) {
 
    $isMonth = false;
 
-   $isNotAll = false;
+
    if(!empty($year)) {
       if( !empty($filter) && strpos($filter, "WHERE") >= 0) {
          $operator = 'AND';
@@ -782,7 +782,7 @@ if(isPost()) {
                $m['percent_serious'] = $percentSerious;
                $m['percent_heavy'] = $percentHeavy;
                $m['percent_light'] = $percentLight;
-               if($isNotAll) {
+               if(!empty($listMonthSerious)) {
                   $m['score'] = getScore($percentSerious, $percentHeavy, $percentLight);
                }
             } else {
@@ -811,7 +811,7 @@ if(isPost()) {
          $dataPercentHeavy = "";
          $dataPercentLight = "";
 
-         if($isNotAll) {
+         if(!empty($sqlQuantityReportSerious)) {
             $dataTable = '
                <table class="table table-bordered">
                   <tr>
@@ -857,7 +857,7 @@ if(isPost()) {
                $dataPercentHeavy .= ''.$item['percent_heavy'].', ';
                $dataPercentLight .= ''.$item['percent_light'].', ';
 
-               if($isNotAll) {
+               if(!empty($listMonthSerious)) {
                   $contentTable .= '
                   <tr>
                      <td> Tháng '.$item['month'].'</td>

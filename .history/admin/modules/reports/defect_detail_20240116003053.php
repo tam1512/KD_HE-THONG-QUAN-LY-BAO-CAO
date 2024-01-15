@@ -333,7 +333,7 @@ $rowMaxOnPage = 10;
          <option value="4" <?php echo ($report['status'] == 4) ? 'selected' : false ?>>Nhận tiền trừ</option>
       </select>
    </div>
-   <div class="row d-none" id="deduction-content">
+   <div class="row">
       <div class="col-9">
          <div class="form-group">
             <label for="deduction">Số trừ tiền</label>
@@ -343,9 +343,8 @@ $rowMaxOnPage = 10;
                   $unit = $deduction['unit'];
                }
             ?>
-            <input type="text" name="deduction" id="deduction" placeholder="Nhập số trừ tiền"
+            <input type="text" name="deduction" id="deduction" placeholder="Nhập số trừ điền"
                value="<?php echo !empty($deductionValue) ? $deductionValue : false ?>" class="form-control">
-            <small class="error" id="deduction-error"></small>
          </div>
       </div>
       <div class="col-3">
@@ -355,7 +354,6 @@ $rowMaxOnPage = 10;
                <option value="%" <?php echo !empty($unit) && $unit == "%" ? "selected" : false ?>>%</option>
                <option value="VNĐ" <?php echo !empty($unit) && $unit == "VNĐ" ? "selected" : false ?>>VNĐ</option>
             </select>
-            <small class="error" id="unit-error"></small>
          </div>
       </div>
    </div>

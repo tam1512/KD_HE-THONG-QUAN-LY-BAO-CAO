@@ -36,7 +36,7 @@ if(isPost()) {
 
    $isMonth = false;
 
-   $isNotAll = false;
+
    if(!empty($year)) {
       if( !empty($filter) && strpos($filter, "WHERE") >= 0) {
          $operator = 'AND';
@@ -753,21 +753,17 @@ if(isPost()) {
          }
          foreach($listMonth as $key => $m) {
             if(!empty($listMonthArr[$key])) {
-               if($isNotAll) {
-                  if(!empty($listMonthSerious)) {
-                     $quantitySerious = 0;
-                     foreach($listMonthSerious as $s) {
-                        if($s['month'] == $m['month']) {
-                           $quantitySerious = $s['quantity_report_serious'];
-                           break;
-                        }
+
+               if(!empty($listMonthSerious)) {
+                  $quantitySerious = 0;
+                  foreach($listMonthSerious as $s) {
+                     if($s['month'] == $m['month']) {
+                        $quantitySerious = $s['quantity_report_serious'];
+                        break;
                      }
-                     $percentSerious = round($quantitySerious / $listMonthArr[$key]['quantity_report'] * 100, 2);
-                     $m['quantity_report_serious'] = $quantitySerious;
-                  } else {
-                     $m['quantity_report_serious'] = 0;
-                     $percentSerious = 0;
                   }
+                  $percentSerious = round($quantitySerious / $listMonthArr[$key]['quantity_report'] * 100, 2);
+                  $m['quantity_report_serious'] = $quantitySerious;
                } else {
                   $percentSerious = round($listMonthArr[$key]['total_serious'] / $listMonthArr[$key]['total_inspect'] * 100, 2);
                }
@@ -782,7 +778,7 @@ if(isPost()) {
                $m['percent_serious'] = $percentSerious;
                $m['percent_heavy'] = $percentHeavy;
                $m['percent_light'] = $percentLight;
-               if($isNotAll) {
+               if(!empty($listMonthSerious)) {
                   $m['score'] = getScore($percentSerious, $percentHeavy, $percentLight);
                }
             } else {
@@ -811,7 +807,7 @@ if(isPost()) {
          $dataPercentHeavy = "";
          $dataPercentLight = "";
 
-         if($isNotAll) {
+         if(!empty($sqlQuantityReportSerious)) {
             $dataTable = '
                <table class="table table-bordered">
                   <tr>
@@ -857,7 +853,7 @@ if(isPost()) {
                $dataPercentHeavy .= ''.$item['percent_heavy'].', ';
                $dataPercentLight .= ''.$item['percent_light'].', ';
 
-               if($isNotAll) {
+               if(!empty($listMonthSerious)) {
                   $contentTable .= '
                   <tr>
                      <td> Tháng '.$item['month'].'</td>

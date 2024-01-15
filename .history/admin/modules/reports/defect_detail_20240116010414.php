@@ -343,7 +343,7 @@ $rowMaxOnPage = 10;
                   $unit = $deduction['unit'];
                }
             ?>
-            <input type="text" name="deduction" id="deduction" placeholder="Nhập số trừ tiền"
+            <input type="text" name="deduction" id="deduction" placeholder="Nhập số trừ điền"
                value="<?php echo !empty($deductionValue) ? $deductionValue : false ?>" class="form-control">
             <small class="error" id="deduction-error"></small>
          </div>

@@ -972,7 +972,7 @@ if (btnAddSuggest && addSuggest && changeStatus) {
     if (changeStatus.value == 4) {
       if (deductionValue == "") {
         document.getElementById("deduction-error").innerHTML =
-          "Vui lòng nhập số trừ tiền";
+          "Vui lòng nhập số tiền trừ";
         isContinue = false;
       } else {
         document.getElementById("deduction-error").innerHTML = "";
@@ -982,11 +982,13 @@ if (btnAddSuggest && addSuggest && changeStatus) {
           "Vui lòng chọn đơn vị";
         isContinue = false;
       } else {
-        document.getElementById("unit-error").innerHTML = "";
+        document.getElementById("deduction-error").innerHTML = "";
       }
     }
 
-    if (isContinue == true) {
+    console.log(isContinue);
+
+    if (isContinue) {
       $.ajax({
         url: url,
         method: "POST",

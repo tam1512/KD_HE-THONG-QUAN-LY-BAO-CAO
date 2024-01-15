@@ -36,7 +36,7 @@ if(isPost()) {
 
    $isMonth = false;
 
-   $isNotAll = false;
+
    if(!empty($year)) {
       if( !empty($filter) && strpos($filter, "WHERE") >= 0) {
          $operator = 'AND';
@@ -728,8 +728,6 @@ if(isPost()) {
             $filter AND MONTH(ra.create_at) BETWEEN 1 AND 12 AND rp.factory_id = $object AND ra.quantity_serious_real > 0
             GROUP BY
             MONTH(ra.create_at)";
-
-            $isNotAll = true;
          }
          
          $listMonth = [
@@ -753,21 +751,17 @@ if(isPost()) {
          }
          foreach($listMonth as $key => $m) {
             if(!empty($listMonthArr[$key])) {
-               if($isNotAll) {
-                  if(!empty($listMonthSerious)) {
-                     $quantitySerious = 0;
-                     foreach($listMonthSerious as $s) {
-                        if($s['month'] == $m['month']) {
-                           $quantitySerious = $s['quantity_report_serious'];
-                           break;
-                        }
+
+               if(!empty($listMonthSerious)) {
+                  $quantitySerious = 0;
+                  foreach($listMonthSerious as $s) {
+                     if($s['month'] == $m['month']) {
+                        $quantitySerious = $s['quantity_report_serious'];
+                        break;
                      }
-                     $percentSerious = round($quantitySerious / $listMonthArr[$key]['quantity_report'] * 100, 2);
-                     $m['quantity_report_serious'] = $quantitySerious;
-                  } else {
-                     $m['quantity_report_serious'] = 0;
-                     $percentSerious = 0;
                   }
+                  $percentSerious = round($quantitySerious / $listMonthArr[$key]['quantity_report'] * 100, 2);
+                  $m['quantity_report'] = $quantitySerious;
                } else {
                   $percentSerious = round($listMonthArr[$key]['total_serious'] / $listMonthArr[$key]['total_inspect'] * 100, 2);
                }
@@ -778,11 +772,11 @@ if(isPost()) {
                $m['total_heavy'] = $listMonthArr[$key]['total_heavy'];
                $m['total_light'] = $listMonthArr[$key]['total_light'];
                $m['total_inspect'] = $listMonthArr[$key]['total_inspect'];
-               $m['quantity_report'] = (!empty($listMonthArr[$key]['quantity_report']) ? $listMonthArr[$key]['quantity_report'] : 0);
+               $m['quantity_report'] = $listMonthArr[$key]['quantity_report'];
                $m['percent_serious'] = $percentSerious;
                $m['percent_heavy'] = $percentHeavy;
                $m['percent_light'] = $percentLight;
-               if($isNotAll) {
+               if(!empty($listMonthSerious)) {
                   $m['score'] = getScore($percentSerious, $percentHeavy, $percentLight);
                }
             } else {
@@ -800,7 +794,6 @@ if(isPost()) {
             $listMonth[$key] = $m;
          }
 
-
          $labels = "";
 
          $dataTotalSerious = "";
@@ -811,7 +804,7 @@ if(isPost()) {
          $dataPercentHeavy = "";
          $dataPercentLight = "";
 
-         if($isNotAll) {
+         if(!empty($sqlQuantityReportSerious)) {
             $dataTable = '
                <table class="table table-bordered">
                   <tr>
@@ -857,13 +850,13 @@ if(isPost()) {
                $dataPercentHeavy .= ''.$item['percent_heavy'].', ';
                $dataPercentLight .= ''.$item['percent_light'].', ';
 
-               if($isNotAll) {
+               if(!empty($listMonthSerious)) {
                   $contentTable .= '
                   <tr>
                      <td> Tháng '.$item['month'].'</td>
                      <td>'.$item['total_inspect'].'</td>
                      <td>'.$item['quantity_report'].'</td>
-                     <td>'.(!empty($item['quantity_report_serious']) ? $item['quantity_report_serious'] : 0).'</td>
+                     <td>'.$item['quantity_report_serious'].'</td>
                      <td>'.$item['total_serious'].'</td>
                      <td>'.$item['total_heavy'].'</td>
                      <td>'.$item['total_light'].'</td>

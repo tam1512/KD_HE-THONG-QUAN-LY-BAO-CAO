@@ -942,11 +942,6 @@ let deductionValue = null;
 let deductionUnit = null;
 //Xử lý khi chọn Nhận tiền trừ
 if (changeStatus != null) {
-  if (changeStatus.value == "4") {
-    deduction.classList.remove("d-none");
-  } else {
-    deduction.classList.add("d-none");
-  }
   changeStatus.addEventListener("change", function () {
     if (this.value == "4") {
       deduction.classList.remove("d-none");
@@ -965,28 +960,29 @@ if (btnAddSuggest && addSuggest && changeStatus) {
     deductionValue = document.getElementById("deduction").value;
     deductionUnit = document.getElementById("unit").value;
 
+    console.log(deductionValue);
     let url =
       "http://localhost/KimDuc/radix/admin/?module=reports&action=change_suggest_status";
     let isContinue = true;
 
     if (changeStatus.value == 4) {
       if (deductionValue == "") {
-        document.getElementById("deduction-error").innerHTML =
-          "Vui lòng nhập số trừ tiền";
+        document.getElementById("deduction-error").innerText =
+          "Vui lòng nhập số tiền trừ";
         isContinue = false;
       } else {
-        document.getElementById("deduction-error").innerHTML = "";
+        document.getElementById("deduction-error").innerText = "";
       }
       if (deductionUnit == "") {
-        document.getElementById("unit-error").innerHTML =
+        document.getElementById("unit-error").innerText =
           "Vui lòng chọn đơn vị";
         isContinue = false;
       } else {
-        document.getElementById("unit-error").innerHTML = "";
+        document.getElementById("deduction-error").innerText = "";
       }
     }
 
-    if (isContinue == true) {
+    if (isContinue) {
       $.ajax({
         url: url,
         method: "POST",

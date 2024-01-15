@@ -36,7 +36,7 @@ if(isPost()) {
 
    $isMonth = false;
 
-   $isNotAll = false;
+
    if(!empty($year)) {
       if( !empty($filter) && strpos($filter, "WHERE") >= 0) {
          $operator = 'AND';
@@ -783,7 +783,11 @@ if(isPost()) {
                $m['percent_heavy'] = $percentHeavy;
                $m['percent_light'] = $percentLight;
                if($isNotAll) {
-                  $m['score'] = getScore($percentSerious, $percentHeavy, $percentLight);
+                  if(!empty($listMonthSerious)) {
+                     $m['score'] = getScore($percentSerious, $percentHeavy, $percentLight);
+                  } else {
+                     $m['score'] = 0;
+                  }
                }
             } else {
                $m['total_serious'] = 0;
