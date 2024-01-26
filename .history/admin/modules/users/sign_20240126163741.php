@@ -17,12 +17,13 @@ $data = [
 
 $userId = isLogin()["user_id"];
 $signDetail = firstRaw("SELECT sign_text, description FROM sign WHERE user_id = $userId");
+echo $signDetail['sign_text'];
 $isSign = !empty($signDetail) ? true : false;
 
 if(isPost()) {
    $errors = [];
    $body = getBody('post');
-   $signText = trim($body['sign_text']);
+   $signText = trim($body['sign-text']);
    $description = trim($body['description']);
 
    //độ dài của {"lines":[]} lấy được từ json của sign ajax
@@ -72,11 +73,6 @@ $infor = $signDetail;
 if(!empty($old)) {
    $infor = $old;
 } 
-
-// echo '<pre>';
-// print_r($infor);
-// echo '</pre>';
-
 ?>
 <div class="container">
    <?php getMsg($message, $msgType) ?>
@@ -102,7 +98,7 @@ if(!empty($old)) {
             </div>
          </div>
       </div>
-      <input type="hidden" name="sign_text" id="sign-text" value="<?php echo form_infor('sign_text', $infor) ?>">
+      <input type="hidden" name="sign-text" id="sign-text" value="<?php echo form_infor('sign_text', $infor) ?>">
       <button type="submit" class="btn btn-primary btn-sm">Lưu chữ ký</a>
    </form>
 </div>

@@ -589,19 +589,13 @@ $(function () {
       if (disable) {
         //xử lý trường hợp input tự động set giá trị default khi bấm chỉnh sửa mà không có thay đổi gì, lấy giá trị đang có trong sign, vì nó tự động set giá trị ban đầu là rỗng nên khi chỉnh sửa mà k thay đổi thì sẽ thành hình rỗng
         var signatureData = sign.signature("toDataURL");
-        if (signText.val() != "") {
-          signText.val(signatureData);
-        }
+        $("#fullname_GC").prop("disabled", true);
       }
     });
     $("#clear").click(function (e) {
       e.preventDefault();
-      var disable = $("#disable").text() === "Xác nhận";
-      console.log(disable);
-      if (disable) {
-        sign.signature("clear");
-        signText.val("");
-      }
+      sign.signature("clear");
+      signText.val("");
     });
   }
 });

@@ -596,7 +596,7 @@ $(function () {
     });
     $("#clear").click(function (e) {
       e.preventDefault();
-      var disable = $("#disable").text() === "Xác nhận";
+      var disable = $(this).text() === "Xác nhận";
       console.log(disable);
       if (disable) {
         sign.signature("clear");

@@ -596,12 +596,8 @@ $(function () {
     });
     $("#clear").click(function (e) {
       e.preventDefault();
-      var disable = $("#disable").text() === "Xác nhận";
-      console.log(disable);
-      if (disable) {
-        sign.signature("clear");
-        signText.val("");
-      }
+      sign.signature("clear");
+      signText.val("");
     });
   }
 });
