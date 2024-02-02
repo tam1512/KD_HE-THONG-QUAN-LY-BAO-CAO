@@ -736,65 +736,63 @@ $(function () {
 
     $("#disable_GC").click(function (e) {
       e.preventDefault();
-      let fullname = $("#fullname_GC").val();
       // Xác nhận -> chỉnh sửa khi đủ thông tin
-      var disable = $(this).text() === "Xác nhận" && fullname != "";
-      if (!disable) {
-        validateSignGC();
-      }
-
+      var disable = $(this).text() === "Xác nhận";
       $(this).text(disable ? "Chỉnh sửa" : "Xác nhận");
       sign.signature(disable ? "disable" : "enable");
       // console.log(disable);
       if (disable) {
-        validateSignGC();
         //xử lý trường hợp input tự động set giá trị default khi bấm chỉnh sửa mà không có thay đổi gì, lấy giá trị đang có trong sign, vì nó tự động set giá trị ban đầu là rỗng nên khi chỉnh sửa mà k thay đổi thì sẽ thành hình rỗng
         var signatureData = sign.signature("toDataURL");
         $("#fullname_GC").prop("disabled", true);
 
-        //Hiển thị chữ ký sau khi Xác nhận hợp lệ
-        if (signatureData) {
-          // Thời gian hiện tại
-          var currentDate = new Date();
+        if (validateSignGC()) {
+          let fullname = $("#fullname_GC").val();
 
-          var day = currentDate.getDate();
-          var month = currentDate.getMonth() + 1; // Ghi chú: Tháng bắt đầu từ 0 (0 - 11)
-          var year = currentDate.getFullYear();
-          var hours = currentDate.getHours();
-          var minutes = currentDate.getMinutes();
-          var seconds = currentDate.getSeconds();
+          //Hiển thị chữ ký sau khi Xác nhận hợp lệ
+          if (signatureData) {
+            // Thời gian hiện tại
+            var currentDate = new Date();
 
-          // Định dạng lại chuỗi ngày tháng năm
-          var formattedDate = day + "-" + month + "-" + year;
+            var day = currentDate.getDate();
+            var month = currentDate.getMonth() + 1; // Ghi chú: Tháng bắt đầu từ 0 (0 - 11)
+            var year = currentDate.getFullYear();
+            var hours = currentDate.getHours();
+            var minutes = currentDate.getMinutes();
+            var seconds = currentDate.getSeconds();
 
-          // Định dạng lại chuỗi giờ phút giây
-          var formattedTime = hours + ":" + minutes + ":" + seconds;
+            // Định dạng lại chuỗi ngày tháng năm
+            var formattedDate = day + "-" + month + "-" + year;
 
-          // Kết hợp chuỗi ngày tháng và chuỗi giờ phút giây
-          var dateTime = formattedDate + " " + formattedTime;
+            // Định dạng lại chuỗi giờ phút giây
+            var formattedTime = hours + ":" + minutes + ":" + seconds;
 
-          let html = `
+            // Kết hợp chuỗi ngày tháng và chuỗi giờ phút giây
+            var dateTime = formattedDate + " " + formattedTime;
+
+            let html = `
           <img src="${signatureData}" alt="" class="sign"><p class="d-block text-center mt-2">${fullname}</p><p class="d-block text-center">${dateTime}</p> 
           `;
-          // console.log(html);
-          document.getElementById("sign_GC_content").innerHTML = html;
-        }
+            // console.log(html);
+            document.getElementById("sign_GC_content").innerHTML = html;
+          }
 
-        //lưu fullname, sign GC vào csdl
-        let reportIdSign = document.getElementById("id").value;
-        let link = `${rootUrlAdmin}?module=reports&action=quick_sign&id=${reportIdSign}`;
-        let data = { fullname: fullname, sign: signatureData };
-        $.ajax({
-          url: link,
-          method: "POST",
-          data: data,
-          success: function (response) {
-            // console.log(response);
-          },
-          error: function () {
-            console.log("Lỗi lưu chữ ký cơ sở gia công");
-          },
-        });
+          //lưu fullname, sign GC vào csdl
+          let reportIdSign = document.getElementById("id").value;
+          let link = `${rootUrlAdmin}?module=reports&action=quick_sign&id=${reportIdSign}`;
+          let data = { fullname: fullname, sign: signatureData };
+          $.ajax({
+            url: link,
+            method: "POST",
+            data: data,
+            success: function (response) {
+              // console.log(response);
+            },
+            error: function () {
+              console.log("Lỗi lưu chữ ký cơ sở gia công");
+            },
+          });
+        }
       } else {
         $("#fullname_GC").removeAttr("disabled");
       }
