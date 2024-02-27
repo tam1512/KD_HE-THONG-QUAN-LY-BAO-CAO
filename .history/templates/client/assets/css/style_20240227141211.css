@@ -1,0 +1,99 @@
+* {
+  scroll-behavior: smooth;
+}
+
+ul {
+  list-style-type: none;
+}
+
+th,
+td {
+  white-space: nowrap;
+}
+
+.blog_title {
+  text-align: center;
+  text-transform: capitalize;
+  color: #4c5bd4;
+}
+
+.phu_luc {
+  margin: 0;
+  position: sticky;
+  top: 5px;
+  padding: 15px;
+  border-right: 1px solid lightgray;
+}
+
+.phu_luc .conten-pl {
+  border: 2px dashed #4c5bd4;
+  padding: 25px 10px 25px 20px;
+  margin-top: 0;
+  top: 73px;
+}
+
+.phu_luc .conten-pl .tt_phu_luc {
+  height: 45px;
+  width: 88%;
+  margin: 0 auto;
+  background: url(https://timviec365.vn/images/icons/new-icon/phu-luc.png);
+  background-size: 100% 100%;
+  margin-bottom: 10px;
+  padding-top: 14px;
+  color: #fff;
+  text-align: center;
+  font-size: 14px;
+  line-height: 16px;
+  text-transform: uppercase;
+  font-family: Roboto;
+}
+
+.li_h3 {
+  margin-left: 1em !important;
+}
+.li_h4 {
+  margin-left: 2em !important;
+}
+.li_h5 {
+  margin-left: 3em !important;
+}
+
+.conten-pl ul {
+  width: 100%;
+  padding: 0;
+  margin: 0;
+  height: auto;
+  overflow-y: scroll;
+  max-height: 420px;
+}
+
+::-webkit-scrollbar {
+  width: 4px;
+  background-color: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #cacef2;
+  border-radius: 4px;
+}
+
+.text {
+  margin: 12pt 0in;
+  color: black;
+}
+
+.scroll-to-top-button {
+  display: none;
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  width: 50px;
+  height: 50px;
+  background-color: #555;
+  color: #fff;
+  border-radius: 50%;
+  font-size: 30px;
+  text-align: center;
+  line-height: 38px;
+  cursor: pointer;
+}
